@@ -1,102 +1,125 @@
 using System;
-using System.Collections.Generic;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+/* using System.Collections.Generic; */
 
 namespace Views
 {
-  public class UsuarioView
+  public class Usuario : Form
   {
-    public static void AddUsuario()
+    private Form parent;
+    private DataGridView tabela;
+    private DataGridViewButtonColumn colunaEditar;
+    private DataGridViewButtonColumn colunaExcluir;
+    public Usuario(Form parent)
     {
-      string nome, dt_nascimento, endereco, telefone, email;
+      this.parent = parent;
 
-      Console.Write("Informe o nome do usuário: ");
-      nome = Console.ReadLine();
-      Console.Write("Informe a data de nascimento do usuário: ");
-      dt_nascimento = Console.ReadLine();
-      Console.Write("Informe o endereço do usuário: ");
-      endereco = Console.ReadLine();
-      Console.Write("Informe o telefone do usuário: ");
-      telefone = Console.ReadLine();
-      Console.Write("Informe o email do usuário: ");
-      email = Console.ReadLine();
+      // Título da janela
+      this.Text = "Usuários";
 
-      Controllers.UsuarioController.AddUsuario(
-        nome,
-        dt_nascimento,
-        endereco,
-        telefone,
-        email
-      );
+      // Tamanho da janela
+      this.Size = new System.Drawing.Size(1100, 400);
 
-      Console.WriteLine("\n-----------------------------------------");
-      Console.Write("Aperte qualquer tecla para continuar... ");
-      Console.ReadKey();
-      Console.Clear();
+      // Inicializa a tabela
+      tabela = new DataGridView();
+      tabela.Width = 1075;
+      /* tabela.Dock = DockStyle.Fill; */
+
+      // Configurações da tabela
+      tabela.AllowUserToAddRows = false;
+      tabela.ReadOnly = true;
+
+      // Adicionando as colunas à tabela
+      tabela.Columns.Add("Id", "Id");
+      tabela.Columns["Id"].Width = 45;
+      tabela.Columns.Add("Nome", "Nome");
+      tabela.Columns["Nome"].Width = 225;
+      tabela.Columns.Add("Data de Nascimento", "Data de Nascimento");
+      tabela.Columns["Data de Nascimento"].Width = 140;
+      tabela.Columns.Add("Endereço", "Endereço");
+      tabela.Columns["Endereço"].Width = 225;
+      tabela.Columns.Add("Telefone", "Telefone");
+      tabela.Columns["Telefone"].Width = 100;
+      tabela.Columns.Add("Email", "Email");
+      tabela.Columns["Email"].Width = 175;
+
+      colunaEditar = new DataGridViewButtonColumn();
+      colunaEditar.HeaderText = "Editar";
+      colunaEditar.Text = "✏️";
+      colunaEditar.UseColumnTextForButtonValue = true;
+      colunaEditar.DefaultCellStyle.Padding = new Padding(2, 2, 2, 2);
+      colunaEditar.Width = 50;
+      tabela.Columns.Add(colunaEditar);
+
+      colunaExcluir = new DataGridViewButtonColumn();
+      colunaExcluir.HeaderText = "Excluir";
+      colunaExcluir.Text = "🗑️";
+      colunaExcluir.UseColumnTextForButtonValue = true;
+      colunaExcluir.DefaultCellStyle.Padding = new Padding(2, 2, 2, 2);
+      colunaExcluir.Width = 50;
+      tabela.Columns.Add(colunaExcluir);
+
+      // Ajuste automático das colunas
+      tabela.AutoResizeColumns();
+
+      // Adicionando em tela
+      Controls.Add(tabela);
+
+      Select();
+
+      FormClosed += AoFechar;
     }
 
-    public static void ListUsuarios()
+    public void Select()
     {
-      List<Models.Usuario> usuarios = Controllers.UsuarioController.ListUsuarios();
-
-      Console.WriteLine("Segue a lista de usuários: \n");
-      foreach (var usuario in usuarios)
+      using (MySqlConnection conexao = Repositories.Conexao.ObterConexao())
       {
-        Console.WriteLine(usuario.ToString());
+        try
+        {
+          // Abre a conexão com o banco de dados
+          conexao.Open();
+
+          // Consulta SQL para recuperar os registros da tabela de usuários
+          string selectQuery = "SELECT * FROM usuario";
+
+          // Cria um comando MySqlCommand com a consulta SQL e a conexão
+          MySqlCommand comandoSelect = new MySqlCommand(selectQuery, conexao);
+
+          // Executa o comando e obtém um leitor de dados
+          using (MySqlDataReader leitor = comandoSelect.ExecuteReader())
+          {
+            // Lê cada registro retornado pelo leitor de dados
+            while (leitor.Read())
+            {
+              // Obtém os valores das colunas e os converte para as devidas tipagens
+              int id = leitor.GetInt32("id_usuario");
+              string nome = leitor.GetString("nome");
+              DateTime dt_nascimento = leitor.GetDateTime("dt_nascimento");
+              string endereco = leitor.GetString("endereco");
+              string telefone = leitor.GetString("telefone");
+              string email = leitor.GetString("email");
+
+              // Adiciona os dados à tabela usando uma nova linha
+              DataGridViewRow row = new DataGridViewRow();
+              row.CreateCells(tabela, id, nome, dt_nascimento, endereco, telefone, email, "✏️", "🗑️");
+              tabela.Rows.Add(row);
+            }
+          }
+
+          conexao.Close();
+        }
+
+        catch (Exception ex)
+        {
+          MessageBox.Show("Erro ao conectar ao banco de dados: " + ex.Message, "Erro!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
       }
-
-      Console.WriteLine("-----------------------------------------");
-      Console.Write("Aperte qualquer tecla para continuar... ");
-      Console.ReadKey();
-      Console.Clear();
     }
 
-    public static void UpdateUsuario()
+    private void AoFechar(object sender, FormClosedEventArgs e)
     {
-      int id_usuario;
-      string nome, dt_nascimento, endereco, telefone, email;
-
-      Console.Write("Informe o índice do usuário: ");
-      id_usuario = Convert.ToInt32(Console.ReadLine());
-
-      Console.Write("Informe o nome do usuário: ");
-      nome = Console.ReadLine();
-      Console.Write("Informe a data de nascimento do usuário: ");
-      dt_nascimento = Console.ReadLine();
-      Console.Write("Informe o endereço do usuário: ");
-      endereco = Console.ReadLine();
-      Console.Write("Informe o telefone do usuário: ");
-      telefone = Console.ReadLine();
-      Console.Write("Informe o email do usuário: ");
-      email = Console.ReadLine();
-
-      Controllers.UsuarioController.UpdateUsuario(
-        id_usuario - 1,
-				nome,
-				dt_nascimento,
-				endereco,
-				telefone,
-				email
-      );
-
-      Console.WriteLine("\n-----------------------------------------");
-      Console.Write("Aperte qualquer tecla para continuar... ");
-      Console.ReadKey();
-      Console.Clear();
-    }
-
-    public static void DeleteUsuario()
-    {
-      int id_usuario;
-
-      Console.Write("Informe o índice do usuário: ");
-      id_usuario = Convert.ToInt32(Console.ReadLine());
-
-      Controllers.UsuarioController.DeleteUsuario(id_usuario - 1);
-
-      Console.WriteLine("\n-----------------------------------------");
-      Console.Write("Aperte qualquer tecla para continuar... ");
-      Console.ReadKey();
-      Console.Clear();
+      this.parent.Show();
     }
   }
 }
