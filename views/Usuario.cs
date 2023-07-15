@@ -71,7 +71,18 @@ namespace Views
       FormClosed += AoFechar;
     }
 
-    public void Select()
+    /* private void GetUsuarios()
+    {
+      List<Models.Usuario> usuarios = Controllers.UsuarioController.ListUsuarios();
+
+      lstItems.Items.Clear();
+      foreach (var usuario in usuarios)
+      {
+        this.lstItems.Items.Add(usuario.Nome);
+      }
+    } */
+
+    /* public void Select()
     {
       using (MySqlConnection conexao = Repositories.Conexao.ObterConexao())
       {
@@ -115,11 +126,16 @@ namespace Views
           MessageBox.Show("Erro ao conectar ao banco de dados: " + ex.Message, "Erro!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
-    }
+    } */
 
     private void AoFechar(object sender, FormClosedEventArgs e)
     {
       this.parent.Show();
     }
+
+    /* public override void Refresh()
+    {
+      GetUsuarios();
+    } */
   }
 }

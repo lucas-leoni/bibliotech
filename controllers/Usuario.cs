@@ -5,9 +5,14 @@ namespace Controllers
 {
   public class UsuarioController
   {
+    /* public static void Sincronizar()
+    {
+      Models.Usuario.Sincronizar();
+    } */
+
     public static void AddUsuario(
       string nome,
-      string dt_nascimento,
+      DateTime dt_nascimento,
       string endereco,
       string telefone,
       string email
@@ -30,7 +35,7 @@ namespace Controllers
     public static void UpdateUsuario(
       int id_usuario,
       string nome,
-      string dt_nascimento,
+      DateTime dt_nascimento,
       string endereco,
       string telefone,
       string email

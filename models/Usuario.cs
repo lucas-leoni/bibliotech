@@ -6,14 +6,15 @@ namespace Models
   {
     public int IdUsuario { get; set; }
     public string Nome { get; set; }
-    public string DtNascimento { get; set; }
+    public DateTime DtNascimento { get; set; }
     public string Endereco { get; set; }
     public string Telefone { get; set; }
     public string Email { get; set; }
-
+    
+    /* public Usuario() { } */
     public Usuario(
       string nome,
-      string dt_nascimento,
+      DateTime dt_nascimento,
       string endereco,
       string telefone,
       string email
@@ -33,6 +34,11 @@ namespace Models
       this.IdUsuario = id_usuario;
     }
 
+    /* public static void Sincronizar()
+    {
+      Repositories.UsuarioRepository.Sincronizar();
+    } */
+
     public static List<Models.Usuario> ListUsuarios()
     {
       return Repositories.UsuarioRepository.ListUsuarios();
@@ -46,7 +52,7 @@ namespace Models
     public static void UpdateUsuario(
       int id_usuario,
       string nome,
-      string dt_nascimento,
+      DateTime dt_nascimento,
       string endereco,
       string telefone,
       string email
