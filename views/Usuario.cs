@@ -82,7 +82,7 @@ namespace Views
       }
     } */
 
-    /* public void Select()
+    public void Select()
     {
       using (MySqlConnection conexao = Repositories.Conexao.ObterConexao())
       {
@@ -126,7 +126,7 @@ namespace Views
           MessageBox.Show("Erro ao conectar ao banco de dados: " + ex.Message, "Erro!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
-    } */
+    }
 
     private void AoFechar(object sender, FormClosedEventArgs e)
     {
