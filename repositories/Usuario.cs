@@ -74,11 +74,6 @@ namespace Repositories
       usuarios.Add(usuario);
     }
 
-    public static void LimparList()
-    {
-      usuarios.Clear();
-    }
-
     public static List<Models.Usuario> ListUsuarios()
     {
       using (MySqlConnection conexao = Repositories.Conexao.ObterConexao())
@@ -135,6 +130,11 @@ namespace Repositories
       {
         return usuarios[id_usuario];
       }
+    }
+
+    public static void LimparList()
+    {
+      usuarios.Clear();
     }
 
     public static void UpdateUsuario(int id_usuario, Models.Usuario usuario)

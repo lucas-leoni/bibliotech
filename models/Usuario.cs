@@ -55,17 +55,20 @@ namespace Models
       string email */
     )
     {
-      /* Usuario usuario = Usuario.GetUsuario(id_usuario); */
+      // Obtém o usuário existente no banco de dados
+      Usuario usuarioExistente = GetUsuario(id_usuario);
 
-      if (usuario != null)
+      if (usuarioExistente != null)
       {
-        /* usuario.Nome = nome;
-        usuario.DtNascimento = dt_nascimento;
-        usuario.Endereco = endereco;
-        usuario.Telefone = telefone;
-        usuario.Email = email; */
+        // Atualiza as propriedades do usuário existente com os novos valores
+        usuarioExistente.Nome = usuario.Nome;
+        usuarioExistente.DtNascimento = usuario.DtNascimento;
+        usuarioExistente.Endereco = usuario.Endereco;
+        usuarioExistente.Telefone = usuario.Telefone;
+        usuarioExistente.Email = usuario.Email;
 
-        Repositories.UsuarioRepository.UpdateUsuario(id_usuario, usuario);
+        // Chama o método de update do repository
+        Repositories.UsuarioRepository.UpdateUsuario(id_usuario, usuarioExistente);
       }
     }
 

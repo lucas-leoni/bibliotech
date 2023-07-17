@@ -44,6 +44,9 @@ namespace Views
       colunaEditar.Name = "Editar";
       colunaEditar.HeaderText = "Editar";
       colunaEditar.Text = "✏️";
+      colunaEditar.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFC107");
+      colunaEditar.DefaultCellStyle.ForeColor = Color.Black;
+      colunaEditar.FlatStyle = FlatStyle.Flat;
       colunaEditar.UseColumnTextForButtonValue = true;
       colunaEditar.DefaultCellStyle.Padding = new Padding(2, 2, 2, 2);
       colunaEditar.Width = 50;
@@ -53,6 +56,9 @@ namespace Views
       colunaExcluir.Name = "Excluir";
       colunaExcluir.HeaderText = "Excluir";
       colunaExcluir.Text = "🗑️";
+      colunaExcluir.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#DC3545");
+      colunaExcluir.DefaultCellStyle.ForeColor = Color.White;
+      colunaExcluir.FlatStyle = FlatStyle.Flat;
       colunaExcluir.UseColumnTextForButtonValue = true;
       colunaExcluir.DefaultCellStyle.Padding = new Padding(2, 2, 2, 2);
       colunaExcluir.Width = 50;
@@ -111,6 +117,9 @@ namespace Views
         // Obtém o valor do campo Id
         int id_usuario = Convert.ToInt32(row.Cells["Id"].Value);
 
+        // Subtrai 1 do id do usuário para ajustar o índice, pois o índice da LIST começa em 0
+        id_usuario -= 1;
+
         // Obtém os valores das outras colunas
         string nome = row.Cells["Nome"].Value.ToString();
         DateTime dt_nascimento = Convert.ToDateTime(row.Cells["DtNascimento"].Value);
@@ -118,14 +127,41 @@ namespace Views
         string telefone = row.Cells["Telefone"].Value.ToString();
         string email = row.Cells["Email"].Value.ToString();
 
-        // Criando um objeto Usuario com os valores obtidos
-        Models.Usuario usuario = new Models.Usuario(nome, dt_nascimento, endereco, telefone, email);
+        // Obtém o objeto Usuario
+        Models.Usuario usuario = Controllers.UsuarioController.GetUsuario(id_usuario);
 
-        // Chamando a função de upadate passando o objeto Usuario
-        Controllers.UsuarioController.UpdateUsuario(id_usuario, usuario);
+        if (usuario != null)
+        {
+          // Atualiza as propriedades do objeto usuario existente
+          usuario.Nome = nome;
+          usuario.DtNascimento = dt_nascimento;
+          usuario.Endereco = endereco;
+          usuario.Telefone = telefone;
+          usuario.Email = email;
 
-        // Chamando o método Refresh para atualizar a tabela
-        tabela.Refresh();
+          // Chama o método de update passando o id e o objeto usuario
+          Controllers.UsuarioController.UpdateUsuario(id_usuario, usuario);
+
+          // Exibe o MessageBox de usuário atualizado com sucesso
+          MessageBox.Show(
+            "Usuário atualizado com sucesso!",
+            "Sucesso!",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information
+          );
+
+          // Atualiza a tabela
+          tabela.Refresh();
+        }
+        else
+        {
+          MessageBox.Show(
+            "Usuário não encontrado!",
+            "Erro!",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error
+          );
+        }
       }
     }
 
