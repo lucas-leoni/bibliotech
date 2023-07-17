@@ -10,8 +10,9 @@ namespace Models
     public string Endereco { get; set; }
     public string Telefone { get; set; }
     public string Email { get; set; }
-    
-    /* public Usuario() { } */
+
+    public Usuario() { }
+
     public Usuario(
       string nome,
       DateTime dt_nascimento,
@@ -29,15 +30,10 @@ namespace Models
       Repositories.UsuarioRepository.AddUsuario(this);
     }
 
-    public void getIndex(int id_usuario)
+    public static void LimparList()
     {
-      this.IdUsuario = id_usuario;
+      Repositories.UsuarioRepository.LimparList();
     }
-
-    /* public static void Sincronizar()
-    {
-      Repositories.UsuarioRepository.Sincronizar();
-    } */
 
     public static List<Models.Usuario> ListUsuarios()
     {
@@ -51,22 +47,23 @@ namespace Models
 
     public static void UpdateUsuario(
       int id_usuario,
-      string nome,
+      Usuario usuario
+      /* string nome,
       DateTime dt_nascimento,
       string endereco,
       string telefone,
-      string email
+      string email */
     )
     {
-      Usuario usuario = Usuario.GetUsuario(id_usuario);
+      /* Usuario usuario = Usuario.GetUsuario(id_usuario); */
 
       if (usuario != null)
       {
-        usuario.Nome = nome;
+        /* usuario.Nome = nome;
         usuario.DtNascimento = dt_nascimento;
         usuario.Endereco = endereco;
         usuario.Telefone = telefone;
-        usuario.Email = email;
+        usuario.Email = email; */
 
         Repositories.UsuarioRepository.UpdateUsuario(id_usuario, usuario);
       }
@@ -83,7 +80,7 @@ namespace Models
 
     public override string ToString()
     {
-      return $"------------------------\n{IdUsuario + 1}º usuário\nNome: {Nome}\nData de nascimento: {DtNascimento}\nEndereco: {Endereco}\nTelefone: {Telefone}\nEmail: {Email}\n------------------------\n";
+      return $"------------------------\nNome: {Nome}\nData de nascimento: {DtNascimento}\nEndereco: {Endereco}\nTelefone: {Telefone}\nEmail: {Email}\n------------------------\n";
     }
   }
 }

@@ -5,10 +5,10 @@ namespace Controllers
 {
   public class UsuarioController
   {
-    /* public static void Sincronizar()
+    public static void LimparList()
     {
-      Models.Usuario.Sincronizar();
-    } */
+      Models.Usuario.LimparList();
+    }
 
     public static void AddUsuario(
       string nome,
@@ -34,20 +34,22 @@ namespace Controllers
 
     public static void UpdateUsuario(
       int id_usuario,
-      string nome,
+      Models.Usuario usuario
+      /* string nome,
       DateTime dt_nascimento,
       string endereco,
       string telefone,
-      string email
+      string email */
     )
     {
       Models.Usuario.UpdateUsuario(
         id_usuario,
-        nome,
+        usuario
+        /* nome,
         dt_nascimento,
         endereco,
         telefone,
-        email
+        email */
       );
     }
 

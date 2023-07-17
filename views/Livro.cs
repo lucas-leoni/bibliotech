@@ -1,9 +1,29 @@
 using System;
+using System.Windows.Forms;
+
+namespace Views
+{
+  public class Livro : UserControl
+  {
+    public Livro()
+    {
+      Button testLivro = new Button();
+      testLivro.Text = "Livro";
+      testLivro.Location = new System.Drawing.Point(0, 0);
+
+      Controls.Add(testLivro);
+
+      BackColor = System.Drawing.Color.LightBlue;
+    }
+  }
+}
+
+/* using System;
 using System.Collections.Generic;
 
 namespace Views
 {
-  public class LivroView
+  public class Livro
   {
     public static void AddLivro()
     {
@@ -97,4 +117,4 @@ namespace Views
       Console.Clear();
     }
   }
-}
+} */

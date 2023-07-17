@@ -5,7 +5,7 @@ namespace Views
 {
   public class Login : Form
   {
-    private Usuario usuario;
+    private Menu menu;
     private Label lblUsuario;
     private TextBox inpUsuario;
     private Label lblSenha;
@@ -117,14 +117,8 @@ namespace Views
       }
       else
       {
-        /* MessageBox.Show(
-          "Login realizado com sucesso!",
-          "Sucesso!",
-          MessageBoxButtons.OK,
-          MessageBoxIcon.Information
-        ); */
-        usuario = new Usuario(this);
-        usuario.Show();
+        menu = new Menu(this);
+        menu.Show();
         this.Hide();
       }
     }

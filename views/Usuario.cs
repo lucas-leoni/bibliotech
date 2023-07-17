@@ -1,20 +1,15 @@
 using System;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
-/* using System.Collections.Generic; */
 
 namespace Views
 {
-  public class Usuario : Form
+  public class Usuario : UserControl
   {
-    private Form parent;
     private DataGridView tabela;
     private DataGridViewButtonColumn colunaEditar;
     private DataGridViewButtonColumn colunaExcluir;
-    public Usuario(Form parent)
+    public Usuario()
     {
-      this.parent = parent;
-
       // Título da janela
       this.Text = "Usuários";
 
@@ -27,24 +22,26 @@ namespace Views
       /* tabela.Dock = DockStyle.Fill; */
 
       // Configurações da tabela
-      tabela.AllowUserToAddRows = false;
-      tabela.ReadOnly = true;
+      tabela.AllowUserToAddRows = true;
+      tabela.ReadOnly = false;
 
       // Adicionando as colunas à tabela
       tabela.Columns.Add("Id", "Id");
       tabela.Columns["Id"].Width = 45;
+      tabela.Columns["Id"].ReadOnly = true;
       tabela.Columns.Add("Nome", "Nome");
       tabela.Columns["Nome"].Width = 225;
-      tabela.Columns.Add("Data de Nascimento", "Data de Nascimento");
-      tabela.Columns["Data de Nascimento"].Width = 140;
-      tabela.Columns.Add("Endereço", "Endereço");
-      tabela.Columns["Endereço"].Width = 225;
+      tabela.Columns.Add("DtNascimento", "Data de Nascimento");
+      tabela.Columns["DtNascimento"].Width = 140;
+      tabela.Columns.Add("Endereco", "Endereço");
+      tabela.Columns["Endereco"].Width = 225;
       tabela.Columns.Add("Telefone", "Telefone");
       tabela.Columns["Telefone"].Width = 100;
       tabela.Columns.Add("Email", "Email");
       tabela.Columns["Email"].Width = 175;
 
       colunaEditar = new DataGridViewButtonColumn();
+      colunaEditar.Name = "Editar";
       colunaEditar.HeaderText = "Editar";
       colunaEditar.Text = "✏️";
       colunaEditar.UseColumnTextForButtonValue = true;
@@ -53,6 +50,7 @@ namespace Views
       tabela.Columns.Add(colunaEditar);
 
       colunaExcluir = new DataGridViewButtonColumn();
+      colunaExcluir.Name = "Excluir";
       colunaExcluir.HeaderText = "Excluir";
       colunaExcluir.Text = "🗑️";
       colunaExcluir.UseColumnTextForButtonValue = true;
@@ -66,76 +64,74 @@ namespace Views
       // Adicionando em tela
       Controls.Add(tabela);
 
-      Select();
+      GetUsuarios();
 
-      FormClosed += AoFechar;
+      tabela.CellContentClick += Update;
     }
 
-    /* private void GetUsuarios()
+    private void GetUsuarios()
     {
+      Controllers.UsuarioController.LimparList();
       List<Models.Usuario> usuarios = Controllers.UsuarioController.ListUsuarios();
 
-      lstItems.Items.Clear();
       foreach (var usuario in usuarios)
       {
-        this.lstItems.Items.Add(usuario.Nome);
+        PopulaTabela(
+          usuario.IdUsuario,
+          usuario.Nome,
+          usuario.DtNascimento,
+          usuario.Endereco,
+          usuario.Telefone,
+          usuario.Email
+        );
       }
-    } */
+    }
 
-    public void Select()
+    public void PopulaTabela(
+      int id,
+      string nome,
+      DateTime dt_nascimento,
+      string endereco,
+      string telefone,
+      string email
+    )
     {
-      using (MySqlConnection conexao = Repositories.Conexao.ObterConexao())
+      // Adiciona os dados à tabela usando uma nova linha
+      DataGridViewRow row = new DataGridViewRow();
+      row.CreateCells(tabela, id, nome, dt_nascimento, endereco, telefone, email, "✏️", "🗑️");
+      tabela.Rows.Add(row);
+    }
+
+    public void Update(object sender, DataGridViewCellEventArgs e)
+    {
+      if (e.RowIndex >= 0 && e.ColumnIndex == tabela.Columns["Editar"].Index)
       {
-        try
-        {
-          // Abre a conexão com o banco de dados
-          conexao.Open();
+        DataGridViewRow row = tabela.Rows[e.RowIndex];
 
-          // Consulta SQL para recuperar os registros da tabela de usuários
-          string selectQuery = "SELECT * FROM usuario";
+        // Obtém o valor do campo Id
+        int id_usuario = Convert.ToInt32(row.Cells["Id"].Value);
 
-          // Cria um comando MySqlCommand com a consulta SQL e a conexão
-          MySqlCommand comandoSelect = new MySqlCommand(selectQuery, conexao);
+        // Obtém os valores das outras colunas
+        string nome = row.Cells["Nome"].Value.ToString();
+        DateTime dt_nascimento = Convert.ToDateTime(row.Cells["DtNascimento"].Value);
+        string endereco = row.Cells["Endereco"].Value.ToString();
+        string telefone = row.Cells["Telefone"].Value.ToString();
+        string email = row.Cells["Email"].Value.ToString();
 
-          // Executa o comando e obtém um leitor de dados
-          using (MySqlDataReader leitor = comandoSelect.ExecuteReader())
-          {
-            // Lê cada registro retornado pelo leitor de dados
-            while (leitor.Read())
-            {
-              // Obtém os valores das colunas e os converte para as devidas tipagens
-              int id = leitor.GetInt32("id_usuario");
-              string nome = leitor.GetString("nome");
-              DateTime dt_nascimento = leitor.GetDateTime("dt_nascimento");
-              string endereco = leitor.GetString("endereco");
-              string telefone = leitor.GetString("telefone");
-              string email = leitor.GetString("email");
+        // Criando um objeto Usuario com os valores obtidos
+        Models.Usuario usuario = new Models.Usuario(nome, dt_nascimento, endereco, telefone, email);
 
-              // Adiciona os dados à tabela usando uma nova linha
-              DataGridViewRow row = new DataGridViewRow();
-              row.CreateCells(tabela, id, nome, dt_nascimento, endereco, telefone, email, "✏️", "🗑️");
-              tabela.Rows.Add(row);
-            }
-          }
+        // Chamando a função de upadate passando o objeto Usuario
+        Controllers.UsuarioController.UpdateUsuario(id_usuario, usuario);
 
-          conexao.Close();
-        }
-
-        catch (Exception ex)
-        {
-          MessageBox.Show("Erro ao conectar ao banco de dados: " + ex.Message, "Erro!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
+        // Chamando o método Refresh para atualizar a tabela
+        tabela.Refresh();
       }
     }
 
-    private void AoFechar(object sender, FormClosedEventArgs e)
-    {
-      this.parent.Show();
-    }
-
-    /* public override void Refresh()
+    public override void Refresh()
     {
       GetUsuarios();
-    } */
+    }
   }
 }
