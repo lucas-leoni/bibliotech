@@ -44,9 +44,9 @@ namespace Views
       colunaEditar.Name = "Editar";
       colunaEditar.HeaderText = "Editar";
       colunaEditar.Text = "✏️";
-      colunaEditar.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFC107");
+      /* colunaEditar.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFC107");
       colunaEditar.DefaultCellStyle.ForeColor = Color.Black;
-      colunaEditar.FlatStyle = FlatStyle.Flat;
+      colunaEditar.FlatStyle = FlatStyle.Flat; */
       colunaEditar.UseColumnTextForButtonValue = true;
       colunaEditar.DefaultCellStyle.Padding = new Padding(2, 2, 2, 2);
       colunaEditar.Width = 50;
@@ -56,9 +56,9 @@ namespace Views
       colunaExcluir.Name = "Excluir";
       colunaExcluir.HeaderText = "Excluir";
       colunaExcluir.Text = "🗑️";
-      colunaExcluir.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#DC3545");
+      /* colunaExcluir.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#DC3545");
       colunaExcluir.DefaultCellStyle.ForeColor = Color.White;
-      colunaExcluir.FlatStyle = FlatStyle.Flat;
+      colunaExcluir.FlatStyle = FlatStyle.Flat; */
       colunaExcluir.UseColumnTextForButtonValue = true;
       colunaExcluir.DefaultCellStyle.Padding = new Padding(2, 2, 2, 2);
       colunaExcluir.Width = 50;
