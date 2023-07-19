@@ -16,10 +16,10 @@ namespace Views
       // Inicializa a tabela
       tabela = new DataGridView();
 
-      // Define as dimensões mínimas
-      tabela.MinimumSize = new System.Drawing.Size(1053, 275);
+      // Define as dimensões mínimas da tabela
+      tabela.MinimumSize = new System.Drawing.Size(1070, 275);
 
-      // Define as dimensões máximas
+      // Define as dimensões máximas da tabela
       tabela.MaximumSize = new System.Drawing.Size(1200, 275);
 
       // Calcula a posição horizontal central
@@ -30,6 +30,9 @@ namespace Views
 
       // Define a posição da tabela
       tabela.Location = new System.Drawing.Point(x, y);
+
+      // Define a cor de fundo da tabela
+      tabela.BackgroundColor = SystemColors.Control;
 
       // Configurações da tabela
       tabela.AllowUserToAddRows = false;
@@ -136,7 +139,7 @@ namespace Views
     {
       // Adiciona os dados à tabela usando uma nova linha
       DataGridViewRow row = new DataGridViewRow();
-      row.CreateCells(tabela, id, nome, dt_nascimento, endereco, telefone, email, "✏️", "🗑️");
+      row.CreateCells(tabela, id, nome, dt_nascimento.ToString("dd/MM/yyyy"), endereco, telefone, email, "✏️", "🗑️");
       tabela.Rows.Add(row);
     }
 

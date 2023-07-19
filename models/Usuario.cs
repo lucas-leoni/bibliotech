@@ -48,11 +48,6 @@ namespace Models
     public static void UpdateUsuario(
       int id_usuario,
       Usuario usuario
-      /* string nome,
-      DateTime dt_nascimento,
-      string endereco,
-      string telefone,
-      string email */
     )
     {
       // Obtém o usuário existente no banco de dados
