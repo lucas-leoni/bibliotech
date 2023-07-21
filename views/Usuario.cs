@@ -19,7 +19,8 @@ namespace Views
     private MaskedTextBox inpTelefone;
     private Label lblEmail;
     private TextBox inpEmail;
-    private Button bntAdd;
+    private Button btnAdd;
+    private Button btnLimpar;
     private Panel painelPrincipal;
     public Usuario(Panel painelPrincipal)
     {
@@ -90,25 +91,76 @@ namespace Views
 
       lblNome = new Label();
       inpNome = new TextBox();
-      inpNome.MaxLength = 120;
-
       lblDtNascimento = new Label();
       inpDtNascimento = new DateTimePicker();
       lblEndereco = new Label();
       inpEndereco = new TextBox();
-      inpEndereco.MaxLength = 120;
       lblTelefone = new Label();
       inpTelefone = new MaskedTextBox();
+      lblEmail = new Label();
+      inpEmail = new TextBox();
+      btnAdd = new Button();
+      btnLimpar = new Button();
+
+      lblNome.Text = "Nome:";
+
+      // Obter a altura disponível entre o final da tabela e o final da janela
+      int altura_disponivel = this.ClientSize.Height - tabela.Bottom;
+
+      // Calcular a posição vertical do label para centralizá-lo
+      /* int form_y = tabela.Bottom + (altura_disponivel - lblNome.Height - inpNome.Height - btnAdd.Height) / 2; */
+      int form_y = 50;
+      lblNome.Location = new Point(x, form_y);
+
+      inpNome.MaxLength = 120;
+      inpNome.Width = 225;
+      inpNome.Location = new Point(x, form_y + 23);
+
+      lblDtNascimento.Text = "Data de Nascimento:";
+      lblDtNascimento.Width = 140;
+      lblDtNascimento.Location = new Point(inpNome.Location.X + inpNome.Width + 20, form_y);
+
+      inpDtNascimento.Format = DateTimePickerFormat.Custom;
+      inpDtNascimento.CustomFormat = "dd/MM/yyyy";
+      inpDtNascimento.Width = 140;
+      inpDtNascimento.Location = new Point(inpNome.Location.X + inpNome.Width + 20, form_y + 23);
+
+      lblEndereco.Text = "Endereço:";
+      lblEndereco.Location = new Point(inpDtNascimento.Location.X + inpDtNascimento.Width + 20, form_y);
+
+      inpEndereco.MaxLength = 120;
+      inpEndereco.Width = 225;
+      inpEndereco.Location = new Point(inpDtNascimento.Location.X + inpDtNascimento.Width + 20, form_y + 23);
+
+      lblTelefone.Text = "Telefone:";
+      lblTelefone.Location = new Point(inpEndereco.Location.X + inpEndereco.Width + 20, form_y);
+
+      inpTelefone.Width = 100;
+      inpTelefone.Location = new Point(inpEndereco.Location.X + inpEndereco.Width + 20, form_y + 23);
 
       // Define a máscara inicial para telefone fixo
       SetTelefoneMask("(00) 0000-0000");
 
-      lblEmail = new Label();
-      inpEmail = new TextBox();
+      lblEmail.Text = "Email:";
+      lblEmail.Location = new Point(inpTelefone.Location.X + inpTelefone.Width + 20, form_y);
+
       inpEmail.MaxLength = 50;
-      bntAdd = new Button();
-      bntAdd.Text = "Adicionar usuário";
-      bntAdd.Click += Insert;
+      inpEmail.Width = 175;
+      inpEmail.Location = new Point(inpTelefone.Location.X + inpTelefone.Width + 20, form_y + 23);
+
+      int btn_add_x = tabela.Left + tabela.Width - btnAdd.Width;
+      int btn_y = form_y + lblNome.Height + inpNome.Height + 30;
+
+      btnAdd.Text = "Adicionar";
+      btnAdd.BackColor = Color.FromArgb(0, 123, 255); // Cor azul do Bootstrap (btn-primary)
+      btnAdd.ForeColor = Color.White;
+      btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 123, 255);
+      btnAdd.Location = new Point(btn_add_x, btn_y);
+      btnAdd.Click += Insert;
+
+      btnLimpar.Text = "Limpar";
+      btnLimpar.Location = new Point(tabela.Left, btn_y);
+      btnLimpar.Click += Limpar;
 
       // Adicionando em tela
       Controls.Add(tabela);
@@ -122,6 +174,8 @@ namespace Views
       Controls.Add(inpTelefone);
       Controls.Add(lblEmail);
       Controls.Add(inpEmail);
+      Controls.Add(btnAdd);
+      Controls.Add(btnLimpar);
 
       GetUsuarios();
 
@@ -141,6 +195,8 @@ namespace Views
       // Adiciona um evento para controlar a máscara de acordo com o valor digitado
       inpTelefone.TextChanged += inpTelefone_TextChanged;
 
+      btnAdd.MouseHover += btnAdd_MouseHover;
+      btnAdd.MouseLeave += btnAdd_MouseLeave;
       Load += Form_Load;
     }
 
@@ -446,6 +502,25 @@ namespace Views
 
       // Se todas as validações passaram, retorna true para indicar que todos os campos são válidos
       return true;
+    }
+
+    public void Limpar(object sender, EventArgs e)
+    {
+      // Lógica para limpar todos os campos do form de adicionar
+    }
+
+    private void btnAdd_MouseHover(object sender, EventArgs e)
+    {
+      btnAdd.BackColor = Color.FromArgb(0, 86, 179); // Cor de hover do Bootstrap btn-primary
+      btnAdd.ForeColor = Color.White;
+      btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 86, 179);
+    }
+
+    private void btnAdd_MouseLeave(object sender, EventArgs e)
+    {
+      btnAdd.BackColor = Color.FromArgb(0, 123, 255); // Cor normal do Bootstrap btn-primary
+      btnAdd.ForeColor = Color.White;
+      btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 123, 255);
     }
 
     public void Insert(object sender, EventArgs e)
