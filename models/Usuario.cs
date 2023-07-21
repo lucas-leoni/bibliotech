@@ -51,19 +51,19 @@ namespace Models
     )
     {
       // Obtém o usuário existente no banco de dados
-      Usuario usuarioExistente = GetUsuario(id_usuario);
+      Usuario usuario_existente = GetUsuario(id_usuario);
 
-      if (usuarioExistente != null)
+      if (usuario_existente != null)
       {
         // Atualiza as propriedades do usuário existente com os novos valores
-        usuarioExistente.Nome = usuario.Nome;
-        usuarioExistente.DtNascimento = usuario.DtNascimento;
-        usuarioExistente.Endereco = usuario.Endereco;
-        usuarioExistente.Telefone = usuario.Telefone;
-        usuarioExistente.Email = usuario.Email;
+        usuario_existente.Nome = usuario.Nome;
+        usuario_existente.DtNascimento = usuario.DtNascimento;
+        usuario_existente.Endereco = usuario.Endereco;
+        usuario_existente.Telefone = usuario.Telefone;
+        usuario_existente.Email = usuario.Email;
 
         // Chama o método de update do repository
-        Repositories.UsuarioRepository.UpdateUsuario(id_usuario, usuarioExistente);
+        Repositories.UsuarioRepository.UpdateUsuario(id_usuario, usuario_existente);
       }
     }
 

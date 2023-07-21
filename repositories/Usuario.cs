@@ -114,7 +114,12 @@ namespace Repositories
 
         catch (Exception ex)
         {
-          MessageBox.Show("Erro ao conectar ao banco de dados: " + ex.Message, "Erro!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          MessageBox.Show(
+            "Erro ao conectar ao banco de dados: " + ex.Message,
+            "Erro!",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error
+          );
         }
       }
       return usuarios;
@@ -122,15 +127,10 @@ namespace Repositories
 
     public static Models.Usuario? GetUsuario(int id_usuario)
     {
-      if (id_usuario < 0 || id_usuario >= usuarios.Count)
-      {
-        return null;
-      }
-      else
-      {
-        return usuarios[id_usuario];
-      }
+      // Encontra o usuário na List com base no valor do atributo Id
+      return usuarios.Find(u => u.IdUsuario == id_usuario);
     }
+
 
     public static void LimparList()
     {
@@ -162,7 +162,8 @@ namespace Repositories
 
             if (linhas_afetadas > 0)
             {
-              usuarios[id_usuario] = usuario;
+              Models.Usuario usuario_existente = GetUsuario(id_usuario);
+              usuario_existente = usuario;
             }
             else
             {
@@ -212,12 +213,13 @@ namespace Repositories
           string delete_query = "DELETE FROM usuario WHERE id_usuario = @IdUsuario";
           MySqlCommand comando_delete = new MySqlCommand(delete_query, conexao);
 
-          comando_delete.Parameters.AddWithValue("@IdUsuario", usuarios[id_usuario].IdUsuario);
+          Models.Usuario usuario = GetUsuario(id_usuario);
+          comando_delete.Parameters.AddWithValue("@IdUsuario", usuario.IdUsuario);
           int linhas_afetadas = comando_delete.ExecuteNonQuery();
 
           if (linhas_afetadas > 0)
           {
-            usuarios.RemoveAt(id_usuario);
+            usuarios.Remove(usuario);
           }
           else
           {

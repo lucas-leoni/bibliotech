@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace Views
 {
@@ -8,6 +9,17 @@ namespace Views
     private DataGridView tabela;
     private DataGridViewButtonColumn colunaEditar;
     private DataGridViewButtonColumn colunaExcluir;
+    private Label lblNome;
+    private TextBox inpNome;
+    private Label lblDtNascimento;
+    private DateTimePicker inpDtNascimento;
+    private Label lblEndereco;
+    private TextBox inpEndereco;
+    private Label lblTelefone;
+    private MaskedTextBox inpTelefone;
+    private Label lblEmail;
+    private TextBox inpEmail;
+    private Button bntAdd;
     private Panel painelPrincipal;
     public Usuario(Panel painelPrincipal)
     {
@@ -76,14 +88,59 @@ namespace Views
       // Ajuste automático das colunas
       tabela.AutoResizeColumns();
 
+      lblNome = new Label();
+      inpNome = new TextBox();
+      inpNome.MaxLength = 120;
+
+      lblDtNascimento = new Label();
+      inpDtNascimento = new DateTimePicker();
+      lblEndereco = new Label();
+      inpEndereco = new TextBox();
+      inpEndereco.MaxLength = 120;
+      lblTelefone = new Label();
+      inpTelefone = new MaskedTextBox();
+
+      // Define a máscara inicial para telefone fixo
+      SetTelefoneMask("(00) 0000-0000");
+
+      lblEmail = new Label();
+      inpEmail = new TextBox();
+      inpEmail.MaxLength = 50;
+      bntAdd = new Button();
+      bntAdd.Text = "Adicionar usuário";
+      bntAdd.Click += Insert;
+
       // Adicionando em tela
       Controls.Add(tabela);
+      Controls.Add(lblNome);
+      Controls.Add(inpNome);
+      Controls.Add(lblDtNascimento);
+      Controls.Add(inpDtNascimento);
+      Controls.Add(lblEndereco);
+      Controls.Add(inpEndereco);
+      Controls.Add(lblTelefone);
+      Controls.Add(inpTelefone);
+      Controls.Add(lblEmail);
+      Controls.Add(inpEmail);
 
       GetUsuarios();
 
       tabela.CellContentClick += Update;
       tabela.CellContentClick += Delete;
       tabela.CellMouseEnter += tabela_CellMouseEnter;
+
+      // Adiciona um evento para validação do campo nome
+      inpNome.KeyPress += inpNome_KeyPress;
+
+      // Adiciona um evento para validação do campo endereço
+      inpEndereco.KeyPress += InpEndereco_KeyPress;
+
+      // Adiciona um evento para validar o campo telefone
+      inpTelefone.KeyPress += inpTelefone_KeyPress;
+
+      // Adiciona um evento para controlar a máscara de acordo com o valor digitado
+      inpTelefone.TextChanged += inpTelefone_TextChanged;
+
       Load += Form_Load;
     }
 
@@ -143,6 +200,268 @@ namespace Views
       tabela.Rows.Add(row);
     }
 
+    private void tabela_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+    {
+      if (e.RowIndex >= 0 && (e.ColumnIndex == tabela.Columns["Editar"].Index || e.ColumnIndex == tabela.Columns["Excluir"].Index))
+      {
+        string tooltipText = "";
+
+        if (e.ColumnIndex == tabela.Columns["Editar"].Index)
+        {
+          tooltipText = "Editar Usuário";
+        }
+        else if (e.ColumnIndex == tabela.Columns["Excluir"].Index)
+        {
+          tooltipText = "Excluir Usuário";
+        }
+
+        tabela.Rows[e.RowIndex].Cells[e.ColumnIndex].ToolTipText = tooltipText;
+      }
+    }
+
+    private void inpNome_KeyPress(object sender, KeyPressEventArgs e)
+    {
+      // Verifica se a tecla pressionada é Backspace, Tab ou Enter
+      if (char.IsControl(e.KeyChar))
+      {
+        return;
+      }
+
+      // Verifica se o comprimento máximo foi atingido (120 caracteres)
+      if (inpNome.Text.Length >= 120)
+      {
+        e.Handled = true;
+      }
+
+      // Utiliza a expressão regular para permitir apenas letras e espaços em branco
+      string allowedCharsPattern = "^[a-zA-Z ]$";
+      if (!Regex.IsMatch(e.KeyChar.ToString(), allowedCharsPattern))
+      {
+        e.Handled = true;
+      }
+    }
+
+    public bool NomeValido(string nome)
+    {
+      // Verifica se o nome não está vazio ou preenchido apenas com espaços em branco
+      if (string.IsNullOrWhiteSpace(nome))
+      {
+        return false;
+      }
+
+      // Define o tamanho mínimo do campo de nome para 3 caracteres
+      int tamanhoMin = 3;
+
+      // Verifica se o nome possui o tamanho mínimo exigido
+      if (nome.Length < tamanhoMin)
+      {
+        return false;
+      }
+
+      // Expressão regular para verificar se o nome contém apenas letras e espaços em branco
+      Regex regex = new Regex("^[a-zA-Z ]+$");
+
+      // Verifica se o nome corresponde à expressão regular
+      if (!regex.IsMatch(nome))
+      {
+        return false;
+      }
+
+      return true;
+    }
+
+    private void InpEndereco_KeyPress(object sender, KeyPressEventArgs e)
+    {
+      // Verifica se a tecla pressionada é Backspace, Tab ou Enter
+      if (char.IsControl(e.KeyChar))
+        return;
+
+      // Verifica se o comprimento máximo foi atingido (120 caracteres)
+      if (inpEndereco.Text.Length >= 120)
+        e.Handled = true;
+
+      // Utiliza uma expressão regular para permitir apenas letras, números, vírgulas e traços
+      string allowedCharsPattern = @"^[a-zA-Z0-9, -]$";
+      if (!Regex.IsMatch(e.KeyChar.ToString(), allowedCharsPattern))
+        e.Handled = true;
+    }
+
+    private bool EnderecoValido(string endereco)
+    {
+      // Verifica se o endereço não está vazio ou preenchido apenas com espaços em branco
+      if (string.IsNullOrWhiteSpace(endereco))
+      {
+        return false;
+      }
+
+      // Define o tamanho mínimo do campo de endereço para 10 caracteres
+      int tamanhoMin = 10;
+
+      // Verifica se o endereço possui o tamanho mínimo exigido
+      if (endereco.Length < tamanhoMin)
+      {
+        return false;
+      }
+
+      // Utiliza a expressão regular para validar o endereço completo
+      string allowedCharsPattern = @"^[a-zA-Z0-9, -]{1,120}$";
+      if (!Regex.IsMatch(endereco, allowedCharsPattern))
+      {
+        return false;
+      }
+
+      return true;
+    }
+
+    private void SetTelefoneMask(string mask)
+    {
+      inpTelefone.Mask = mask;
+    }
+
+    private void inpTelefone_KeyPress(object sender, KeyPressEventArgs e)
+    {
+      // Verifica se é um número ou tecla de controle (Backspace, Delete, etc.)
+      if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+      {
+        e.Handled = true; // Ignora o caractere digitado
+      }
+
+      string telefone = inpTelefone.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
+      int totalDigitos = telefone.Length + 1; // +1 porque o evento ainda não atualizou o texto
+
+      // Verifica se atingiu o número máximo de dígitos permitido (11)
+      if (totalDigitos > 11)
+      {
+        e.Handled = true; // Ignora o caractere digitado
+      }
+    }
+
+    private void inpTelefone_TextChanged(object sender, EventArgs e)
+    {
+      string telefone = inpTelefone.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
+
+      if (telefone.Length > 10)
+      {
+        // Telefone celular
+        SetTelefoneMask("(00) 00000-0000");
+      }
+      else
+      {
+        // Telefone fixo
+        SetTelefoneMask("(00) 0000-0000");
+      }
+    }
+
+    private bool TelefoneValido(string telefone)
+    {
+      // Verifica se o telefone não está vazio ou preenchido apenas com espaços em branco
+      if (string.IsNullOrWhiteSpace(telefone))
+      {
+        return false;
+      }
+
+      // Remove caracteres não numéricos do telefone
+      telefone = new string(telefone.Where(char.IsDigit).ToArray());
+
+      // Verifica se o telefone possui o tamanho mínimo exigido
+      int tamanhoMin = 10;
+      if (telefone.Length < tamanhoMin)
+      {
+        return false;
+      }
+
+      // Verifica se o telefone possui o tamanho máximo permitido para celular
+      int tamanhoMaxCelular = 11;
+      if (telefone.Length == tamanhoMaxCelular)
+      {
+        // Formato de telefone celular: (00) 9 0000-0000
+        return Regex.IsMatch(telefone, @"^\(\d{2}\)\s9\s\d{4}-\d{4}$");
+      }
+      else
+      {
+        // Formato de telefone fixo: (00) 0000-0000
+        return Regex.IsMatch(telefone, @"^\(\d{2}\)\s\d{4}-\d{4}$");
+      }
+    }
+
+    private bool ValidarCampos()
+    {
+      string nome = inpNome.Text;
+      string endereco = inpEndereco.Text;
+      string telefone = inpTelefone.Text;
+
+      if (!NomeValido(nome))
+      {
+        MessageBox.Show(
+          "Nome inválido! Insira um nome válido com pelo menos 3 caracteres e apenas letras.",
+          "Erro",
+          MessageBoxButtons.OK,
+          MessageBoxIcon.Error
+        );
+
+        // Limpa o campo nome
+        inpNome.Text = string.Empty;
+
+        // Define o foco para o campo nome
+        inpNome.Focus();
+
+        return false;
+      }
+
+      if (!EnderecoValido(endereco))
+      {
+        MessageBox.Show(
+          "Endereço inválido! Insira um endereço válido com até 120 caracteres e apenas letras, números, vírgulas e traços.",
+          "Erro",
+          MessageBoxButtons.OK,
+          MessageBoxIcon.Error
+        );
+
+        // Limpa o campo endereço
+        inpEndereco.Text = string.Empty;
+
+        // Define o foco para o campo endereço
+        inpEndereco.Focus();
+
+        return false;
+      }
+
+      if (!TelefoneValido(telefone))
+      {
+        MessageBox.Show(
+          "Telefone inválido! Por favor, insira um telefone válido no formato (00) 0000-0000 ou (00) 00000-0000.",
+          "Erro",
+          MessageBoxButtons.OK,
+          MessageBoxIcon.Error
+        );
+
+        // Limpa o campo telefone
+        inpTelefone.Text = string.Empty;
+
+        // Define o foco para o campo telefone
+        inpTelefone.Focus();
+
+        return false;
+      }
+
+      // Se todas as validações passaram, retorna true para indicar que todos os campos são válidos
+      return true;
+    }
+
+    public void Insert(object sender, EventArgs e)
+    {
+      if (ValidarCampos())
+      {
+        // Se todos os campos são válidos, continue com a lógica de salvamento ou outras ações.
+        MessageBox.Show(
+          "Todos os campos válidos!",
+          "Sucesso!",
+          MessageBoxButtons.OK,
+          MessageBoxIcon.Information
+        );
+      }
+    }
+
     public void Update(object sender, DataGridViewCellEventArgs e)
     {
       if (e.RowIndex >= 0 && e.ColumnIndex == tabela.Columns["Editar"].Index)
@@ -161,9 +480,6 @@ namespace Views
 
           // Obtém o valor do campo Id
           int id_usuario = Convert.ToInt32(row.Cells["Id"].Value);
-
-          // Subtrai 1 do id do usuário para ajustar o índice, pois o índice da LIST começa em 0
-          id_usuario -= 1;
 
           // Obtém os valores das outras colunas
           string nome = row.Cells["Nome"].Value.ToString();
@@ -234,9 +550,6 @@ namespace Views
           // Obtém o valor do campo Id
           int id_usuario = Convert.ToInt32(row.Cells["Id"].Value);
 
-          // Subtrai 1 do id do usuário para ajustar o índice, pois o índice da LIST começa em 0
-          id_usuario -= 1;
-
           // Obtém o objeto Usuario
           Models.Usuario usuario = Controllers.UsuarioController.GetUsuario(id_usuario);
 
@@ -279,25 +592,6 @@ namespace Views
             );
           }
         }
-      }
-    }
-
-    private void tabela_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
-    {
-      if (e.RowIndex >= 0 && (e.ColumnIndex == tabela.Columns["Editar"].Index || e.ColumnIndex == tabela.Columns["Excluir"].Index))
-      {
-        string tooltipText = "";
-
-        if (e.ColumnIndex == tabela.Columns["Editar"].Index)
-        {
-          tooltipText = "Editar Usuário";
-        }
-        else if (e.ColumnIndex == tabela.Columns["Excluir"].Index)
-        {
-          tooltipText = "Excluir Usuário";
-        }
-
-        tabela.Rows[e.RowIndex].Cells[e.ColumnIndex].ToolTipText = tooltipText;
       }
     }
 
