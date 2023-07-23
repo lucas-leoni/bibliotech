@@ -7,8 +7,12 @@ namespace Views
   public class Usuario : UserControl
   {
     private DataGridView tabela;
+    private bool isTableCentered = false;
+    private int tabelaX;
+    private int tabelaY;
     private DataGridViewButtonColumn colunaEditar;
     private DataGridViewButtonColumn colunaExcluir;
+    private Panel formConteiner;
     private Label lblNome;
     private TextBox inpNome;
     private Label lblDtNascimento;
@@ -19,13 +23,11 @@ namespace Views
     private MaskedTextBox inpTelefone;
     private Label lblEmail;
     private TextBox inpEmail;
-    private Button btnAdd;
     private Button btnLimpar;
-    private Panel painelPrincipal;
-    public Usuario(Panel painelPrincipal)
-    {
-      this.painelPrincipal = painelPrincipal;
+    private Button btnAdd;
 
+    public Usuario()
+    {
       // Inicializa a tabela
       tabela = new DataGridView();
 
@@ -34,15 +36,6 @@ namespace Views
 
       // Define as dimensões máximas da tabela
       tabela.MaximumSize = new System.Drawing.Size(1200, 275);
-
-      // Calcula a posição horizontal central
-      int x = (painelPrincipal.Width - tabela.Width) / 2;
-
-      // Calcula a posição vertical central
-      int y = (painelPrincipal.Height - tabela.Height) / 2;
-
-      // Define a posição da tabela
-      tabela.Location = new System.Drawing.Point(x, y);
 
       // Define a cor de fundo da tabela
       tabela.BackgroundColor = SystemColors.Control;
@@ -89,6 +82,9 @@ namespace Views
       // Ajuste automático das colunas
       tabela.AutoResizeColumns();
 
+      formConteiner = new Panel();
+      formConteiner.AutoSize = true;
+
       lblNome = new Label();
       inpNome = new TextBox();
       lblDtNascimento = new Label();
@@ -102,80 +98,75 @@ namespace Views
       btnAdd = new Button();
       btnLimpar = new Button();
 
+      int margin_r = 51;
+      int margin_b = 23;
+
       lblNome.Text = "Nome:";
-
-      // Obter a altura disponível entre o final da tabela e o final da janela
-      int altura_disponivel = this.ClientSize.Height - tabela.Bottom;
-
-      // Calcular a posição vertical do label para centralizá-lo
-      /* int form_y = tabela.Bottom + (altura_disponivel - lblNome.Height - inpNome.Height - btnAdd.Height) / 2; */
-      int form_y = 50;
-      lblNome.Location = new Point(x, form_y);
+      lblNome.Location = new System.Drawing.Point(0, 0);
 
       inpNome.MaxLength = 120;
       inpNome.Width = 225;
-      inpNome.Location = new Point(x, form_y + 23);
+      inpNome.Location = new System.Drawing.Point(lblNome.Location.X, margin_b);
 
       lblDtNascimento.Text = "Data de Nascimento:";
       lblDtNascimento.Width = 140;
-      lblDtNascimento.Location = new Point(inpNome.Location.X + inpNome.Width + 20, form_y);
+      lblDtNascimento.Location = new System.Drawing.Point(inpNome.Right + margin_r, 0);
 
       inpDtNascimento.Format = DateTimePickerFormat.Custom;
       inpDtNascimento.CustomFormat = "dd/MM/yyyy";
       inpDtNascimento.Width = 140;
-      inpDtNascimento.Location = new Point(inpNome.Location.X + inpNome.Width + 20, form_y + 23);
+      inpDtNascimento.Location = new System.Drawing.Point(lblDtNascimento.Location.X, margin_b);
 
       lblEndereco.Text = "Endereço:";
-      lblEndereco.Location = new Point(inpDtNascimento.Location.X + inpDtNascimento.Width + 20, form_y);
+      lblEndereco.Location = new System.Drawing.Point(inpDtNascimento.Right + margin_r, 0);
 
       inpEndereco.MaxLength = 120;
       inpEndereco.Width = 225;
-      inpEndereco.Location = new Point(inpDtNascimento.Location.X + inpDtNascimento.Width + 20, form_y + 23);
+      inpEndereco.Location = new System.Drawing.Point(lblEndereco.Location.X, margin_b);
 
       lblTelefone.Text = "Telefone:";
-      lblTelefone.Location = new Point(inpEndereco.Location.X + inpEndereco.Width + 20, form_y);
+      lblTelefone.Location = new System.Drawing.Point(inpEndereco.Right + margin_r, 0);
 
       inpTelefone.Width = 100;
-      inpTelefone.Location = new Point(inpEndereco.Location.X + inpEndereco.Width + 20, form_y + 23);
+      inpTelefone.Location = new System.Drawing.Point(lblTelefone.Location.X, margin_b);
 
       // Define a máscara inicial para telefone fixo
       SetTelefoneMask("(00) 0000-0000");
 
       lblEmail.Text = "Email:";
-      lblEmail.Location = new Point(inpTelefone.Location.X + inpTelefone.Width + 20, form_y);
+      lblEmail.Location = new System.Drawing.Point(inpTelefone.Right + margin_r, 0);
 
       inpEmail.MaxLength = 50;
       inpEmail.Width = 175;
-      inpEmail.Location = new Point(inpTelefone.Location.X + inpTelefone.Width + 20, form_y + 23);
+      inpEmail.Location = new System.Drawing.Point(lblEmail.Location.X, margin_b);
 
-      int btn_add_x = tabela.Left + tabela.Width - btnAdd.Width;
-      int btn_y = form_y + lblNome.Height + inpNome.Height + 30;
+      btnLimpar.Text = "Limpar";
+      btnLimpar.Location = new System.Drawing.Point(0, 75);
+      btnLimpar.Click += btnLimpar_Click;
 
       btnAdd.Text = "Adicionar";
+      int btnAddX = tabela.Left + tabela.Width - btnAdd.Width;
+      btnAdd.Location = new System.Drawing.Point(btnAddX, 75);
       btnAdd.BackColor = Color.FromArgb(0, 123, 255); // Cor azul do Bootstrap (btn-primary)
       btnAdd.ForeColor = Color.White;
       btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 123, 255);
-      btnAdd.Location = new Point(btn_add_x, btn_y);
-      btnAdd.Click += Insert;
-
-      btnLimpar.Text = "Limpar";
-      btnLimpar.Location = new Point(tabela.Left, btn_y);
-      btnLimpar.Click += Limpar;
+      btnAdd.Click += btnAdd_Click;
 
       // Adicionando em tela
       Controls.Add(tabela);
-      Controls.Add(lblNome);
-      Controls.Add(inpNome);
-      Controls.Add(lblDtNascimento);
-      Controls.Add(inpDtNascimento);
-      Controls.Add(lblEndereco);
-      Controls.Add(inpEndereco);
-      Controls.Add(lblTelefone);
-      Controls.Add(inpTelefone);
-      Controls.Add(lblEmail);
-      Controls.Add(inpEmail);
-      Controls.Add(btnAdd);
-      Controls.Add(btnLimpar);
+      formConteiner.Controls.Add(lblNome);
+      formConteiner.Controls.Add(inpNome);
+      formConteiner.Controls.Add(lblDtNascimento);
+      formConteiner.Controls.Add(inpDtNascimento);
+      formConteiner.Controls.Add(lblEndereco);
+      formConteiner.Controls.Add(inpEndereco);
+      formConteiner.Controls.Add(lblTelefone);
+      formConteiner.Controls.Add(inpTelefone);
+      formConteiner.Controls.Add(lblEmail);
+      formConteiner.Controls.Add(inpEmail);
+      formConteiner.Controls.Add(btnLimpar);
+      formConteiner.Controls.Add(btnAdd);
+      Controls.Add(formConteiner);
 
       GetUsuarios();
 
@@ -211,6 +202,28 @@ namespace Views
           MessageBoxButtons.OK,
           MessageBoxIcon.Information
         );
+      }
+
+      // Verifica se o UserControl tem um Panel pai
+      if (this.Parent is Panel painelGeral && !isTableCentered)
+      {
+        // Calcula a posição horizontal central para a tabela
+        tabelaX = (painelGeral.Width - tabela.Width) / 2;
+
+        // Calcula a posição vertical central para a tabela
+        tabelaY = (painelGeral.Height - tabela.Height) / 2;
+
+        // Atualiza a posição da tabela
+        tabela.Location = new System.Drawing.Point(tabelaX, tabelaY);
+
+        int formX = tabelaX;
+        int alturaDisponivelAbaixoTabela = painelGeral.Height - tabela.Bottom;
+        int formY = (alturaDisponivelAbaixoTabela - formConteiner.Height) / 2;
+        formY += tabela.Bottom;
+        formConteiner.Location = new Point(formX, formY);
+
+        // Define a flag como true para que a centralização só ocorra uma vez
+        isTableCentered = true;
       }
     }
 
@@ -504,9 +517,19 @@ namespace Views
       return true;
     }
 
-    public void Limpar(object sender, EventArgs e)
+    public void btnLimpar_Click(object sender, EventArgs e)
     {
-      // Lógica para limpar todos os campos do form de adicionar
+      Limpar();
+    }
+
+    public void Limpar()
+    {
+      // Limpando o texto dos inputs
+      inpNome.Clear();
+      inpDtNascimento.Value = DateTime.Now;
+      inpEndereco.Clear();
+      inpTelefone.Clear();
+      inpEmail.Clear();
     }
 
     private void btnAdd_MouseHover(object sender, EventArgs e)
@@ -523,7 +546,13 @@ namespace Views
       btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 123, 255);
     }
 
-    public void Insert(object sender, EventArgs e)
+    public void btnAdd_Click(object sender, EventArgs e)
+    {
+      Insert();
+      Limpar();
+    }
+
+    public void Insert()
     {
       if (ValidarCampos())
       {

@@ -94,7 +94,8 @@ namespace Views
     {
       // Exibir o conteúdo de Usuario no panel
       painelGeral.Controls.Clear();
-      Usuario usuarioView = new Usuario(painelGeral);
+      /* Usuario usuarioView = new Usuario(painelGeral); */
+      Usuario usuarioView = new Usuario();
       usuarioView.Dock = DockStyle.Fill;
       painelGeral.Controls.Add(usuarioView);
     }
