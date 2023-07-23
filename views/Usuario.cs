@@ -129,9 +129,7 @@ namespace Views
 
       inpTelefone.Width = 100;
       inpTelefone.Location = new System.Drawing.Point(lblTelefone.Location.X, margin_b);
-
-      // Define a máscara inicial para telefone fixo
-      SetTelefoneMask("(00) 0000-0000");
+      inpTelefone.Mask = "(00) 00000-0000";
 
       lblEmail.Text = "Email:";
       lblEmail.Location = new System.Drawing.Point(inpTelefone.Right + margin_r, 0);
@@ -179,12 +177,6 @@ namespace Views
 
       // Adiciona um evento para validação do campo endereço
       inpEndereco.KeyPress += InpEndereco_KeyPress;
-
-      // Adiciona um evento para validar o campo telefone
-      inpTelefone.KeyPress += inpTelefone_KeyPress;
-
-      // Adiciona um evento para controlar a máscara de acordo com o valor digitado
-      inpTelefone.TextChanged += inpTelefone_TextChanged;
 
       btnAdd.MouseHover += btnAdd_MouseHover;
       btnAdd.MouseLeave += btnAdd_MouseLeave;
@@ -382,75 +374,24 @@ namespace Views
       return true;
     }
 
-    private void SetTelefoneMask(string mask)
-    {
-      inpTelefone.Mask = mask;
-    }
-
-    private void inpTelefone_KeyPress(object sender, KeyPressEventArgs e)
-    {
-      // Verifica se é um número ou tecla de controle (Backspace, Delete, etc.)
-      if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
-      {
-        e.Handled = true; // Ignora o caractere digitado
-      }
-
-      string telefone = inpTelefone.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
-      int totalDigitos = telefone.Length + 1; // +1 porque o evento ainda não atualizou o texto
-
-      // Verifica se atingiu o número máximo de dígitos permitido (11)
-      if (totalDigitos > 11)
-      {
-        e.Handled = true; // Ignora o caractere digitado
-      }
-    }
-
-    private void inpTelefone_TextChanged(object sender, EventArgs e)
-    {
-      string telefone = inpTelefone.Text.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
-
-      if (telefone.Length > 10)
-      {
-        // Telefone celular
-        SetTelefoneMask("(00) 00000-0000");
-      }
-      else
-      {
-        // Telefone fixo
-        SetTelefoneMask("(00) 0000-0000");
-      }
-    }
-
     private bool TelefoneValido(string telefone)
     {
-      // Verifica se o telefone não está vazio ou preenchido apenas com espaços em branco
-      if (string.IsNullOrWhiteSpace(telefone))
+      string digitsOnly = GetDigitsOnly(telefone);
+      if (digitsOnly.Length == 11)
       {
-        return false;
-      }
-
-      // Remove caracteres não numéricos do telefone
-      telefone = new string(telefone.Where(char.IsDigit).ToArray());
-
-      // Verifica se o telefone possui o tamanho mínimo exigido
-      int tamanhoMin = 10;
-      if (telefone.Length < tamanhoMin)
-      {
-        return false;
-      }
-
-      // Verifica se o telefone possui o tamanho máximo permitido para celular
-      int tamanhoMaxCelular = 11;
-      if (telefone.Length == tamanhoMaxCelular)
-      {
-        // Formato de telefone celular: (00) 9 0000-0000
-        return Regex.IsMatch(telefone, @"^\(\d{2}\)\s9\s\d{4}-\d{4}$");
+        // Verifica se o telefone possui o formato (xx) 9xxxx-xxxx
+        return Regex.IsMatch(telefone, @"^\(\d{2}\)\s9\d{4}-\d{4}$");
       }
       else
       {
-        // Formato de telefone fixo: (00) 0000-0000
-        return Regex.IsMatch(telefone, @"^\(\d{2}\)\s\d{4}-\d{4}$");
+        return false;
       }
+    }
+
+    private string GetDigitsOnly(string input)
+    {
+      string digitsOnly = Regex.Replace(input, @"\D", "");
+      return digitsOnly;
     }
 
     private bool ValidarCampos()
@@ -498,7 +439,7 @@ namespace Views
       if (!TelefoneValido(telefone))
       {
         MessageBox.Show(
-          "Telefone inválido! Por favor, insira um telefone válido no formato (00) 0000-0000 ou (00) 00000-0000.",
+          "Telefone inválido! Insira um telefone celular com 11 dígitos. Ex: (xx) 9xxxx-xxxx",
           "Erro",
           MessageBoxButtons.OK,
           MessageBoxIcon.Error
