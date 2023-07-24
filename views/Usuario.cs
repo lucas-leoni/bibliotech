@@ -341,6 +341,86 @@ namespace Views
       return true;
     }
 
+    private bool IsDataValida(int dia, int mes, int ano)
+    {
+      // Verifica se o mês é válido
+      if (mes < 1 || mes > 12)
+      {
+        return false;
+      }
+
+      // Verifica se o dia é válido para o mês especificado
+      int[] diasPorMes = new int[] { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+      bool anoBissexto = (ano % 4 == 0 && (ano % 100 != 0 || ano % 400 == 0));
+      if (dia < 1 || (dia > diasPorMes[mes] && !(mes == 2 && dia == 29 && anoBissexto)))
+      {
+        return false;
+      }
+
+      // Verifica se o ano é válido
+      if (ano < 1)
+      {
+        return false;
+      }
+
+      return true;
+    }
+
+    private bool DtNascimentoValida(string dt_nascimento)
+    {
+      // Verifica se a data possui o formato "dd/MM/yyyy" usando regex
+      string regexPattern = @"^(0[1-9]|[1-2][0-9]|3[0-1])/(0[1-9]|1[0-2])/\d{4}$";
+      if (!Regex.IsMatch(dt_nascimento, regexPattern))
+      {
+        return false;
+      }
+
+      // Converte a string de data para o tipo DateTime
+      if (!DateTime.TryParseExact(
+        dt_nascimento,
+        "dd/MM/yyyy",
+        null,
+        System.Globalization.DateTimeStyles.None,
+        out DateTime data
+      ))
+      {
+        return false;
+      }
+
+      // Obtém os componentes da data
+      int dia = data.Day;
+      int mes = data.Month;
+      int ano = data.Year;
+
+      // Verifica se a data é válida, considerando os dias impossíveis em certos meses
+      if (!IsDataValida(dia, mes, ano))
+      {
+        return false;
+      }
+
+      // Verifica se a data é maior ou igual à data atual
+      if (data >= DateTime.Today)
+      {
+        return false;
+      }
+
+      // Verifica a idade mínima
+      int idadeMinima = 7;
+      if (DateTime.Today.Year - ano < idadeMinima)
+      {
+        return false;
+      }
+
+      // Verifica a idade máxima
+      int idadeMaxima = 125;
+      if (DateTime.Today.Year - ano > idadeMaxima)
+      {
+        return false;
+      }
+
+      return true;
+    }
+
     private void InpEndereco_KeyPress(object sender, KeyPressEventArgs e)
     {
       // Verifica se a tecla pressionada é Backspace, Tab ou Enter
@@ -384,6 +464,12 @@ namespace Views
       return true;
     }
 
+    private string GetDigitsOnly(string input)
+    {
+      string digitsOnly = Regex.Replace(input, @"\D", "");
+      return digitsOnly;
+    }
+
     private bool TelefoneValido(string telefone)
     {
       string digitsOnly = GetDigitsOnly(telefone);
@@ -398,17 +484,37 @@ namespace Views
       }
     }
 
-    private string GetDigitsOnly(string input)
+    private bool EmailValido(string email)
     {
-      string digitsOnly = Regex.Replace(input, @"\D", "");
-      return digitsOnly;
+      // Verifica se o email está vazio ou é nulo
+      if (string.IsNullOrEmpty(email))
+      {
+        return false;
+      }
+
+      // Verifica se o email contém espaços em branco
+      if (email.Contains(" "))
+      {
+        return false;
+      }
+
+      // Verifica se o email possui formato válido
+      string regexPattern = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";
+      if (!Regex.IsMatch(email, regexPattern))
+      {
+        return false;
+      }
+
+      return true;
     }
 
     private bool ValidarCampos()
     {
       string nome = inpNome.Text;
+      string dt_nascimento = inpDtNascimento.Text;
       string endereco = inpEndereco.Text;
       string telefone = inpTelefone.Text;
+      string email = inpEmail.Text;
 
       if (!NomeValido(nome))
       {
@@ -424,6 +530,23 @@ namespace Views
 
         // Define o foco para o campo nome
         inpNome.Focus();
+
+        return false;
+      }
+      if (!DtNascimentoValida(dt_nascimento))
+      {
+        MessageBox.Show(
+          "Data de nascimento inválida! Certifique-se de que a data seja válida, anterior à data atual e que indique uma idade entre 7 e 125 anos.",
+          "Erro",
+          MessageBoxButtons.OK,
+          MessageBoxIcon.Error
+        );
+
+        // Limpa o campo data de nascimento
+        inpDtNascimento.Value = DateTime.Now;
+
+        // Define o foco para o campo data de nascimento
+        inpDtNascimento.Focus();
 
         return false;
       }
@@ -460,6 +583,23 @@ namespace Views
 
         // Define o foco para o campo telefone
         inpTelefone.Focus();
+
+        return false;
+      }
+      if (!EmailValido(email))
+      {
+        MessageBox.Show(
+          "Email inválido! Insira um endereço de e-mail válido no formato: usuario@dominio.com",
+          "Erro",
+          MessageBoxButtons.OK,
+          MessageBoxIcon.Error
+        );
+
+        // Limpa o campo email
+        inpEmail.Text = string.Empty;
+
+        // Define o foco para o campo email
+        inpEmail.Focus();
 
         return false;
       }
