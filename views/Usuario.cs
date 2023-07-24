@@ -102,6 +102,7 @@ namespace Views
       int margin_b = 23;
 
       lblNome.Text = "Nome:";
+      lblNome.ForeColor = Color.White;
       lblNome.Location = new System.Drawing.Point(0, 0);
 
       inpNome.MaxLength = 120;
@@ -110,6 +111,7 @@ namespace Views
 
       lblDtNascimento.Text = "Data de Nascimento:";
       lblDtNascimento.Width = 140;
+      lblDtNascimento.ForeColor = Color.White;
       lblDtNascimento.Location = new System.Drawing.Point(inpNome.Right + margin_r, 0);
 
       inpDtNascimento.Format = DateTimePickerFormat.Custom;
@@ -118,6 +120,7 @@ namespace Views
       inpDtNascimento.Location = new System.Drawing.Point(lblDtNascimento.Location.X, margin_b);
 
       lblEndereco.Text = "Endereço:";
+      lblEndereco.ForeColor = Color.White;
       lblEndereco.Location = new System.Drawing.Point(inpDtNascimento.Right + margin_r, 0);
 
       inpEndereco.MaxLength = 120;
@@ -125,6 +128,7 @@ namespace Views
       inpEndereco.Location = new System.Drawing.Point(lblEndereco.Location.X, margin_b);
 
       lblTelefone.Text = "Telefone:";
+      lblTelefone.ForeColor = Color.White;
       lblTelefone.Location = new System.Drawing.Point(inpEndereco.Right + margin_r, 0);
 
       inpTelefone.Width = 100;
@@ -132,6 +136,7 @@ namespace Views
       inpTelefone.Mask = "(00) 00000-0000";
 
       lblEmail.Text = "Email:";
+      lblEmail.ForeColor = Color.White;
       lblEmail.Location = new System.Drawing.Point(inpTelefone.Right + margin_r, 0);
 
       inpEmail.MaxLength = 50;
@@ -414,7 +419,7 @@ namespace Views
       }
 
       // Verifica a idade máxima
-      int idadeMaxima = 125;
+      int idadeMaxima = 100;
       if (DateTime.Today.Year - ano > idadeMaxima)
       {
         return false;
@@ -489,7 +494,7 @@ namespace Views
     private void inpEmail_KeyPress(object sender, KeyPressEventArgs e)
     {
       // Define os caracteres inválidos em um endereço de email
-      string invalidCharacters = " ;,<>[]{}`~!#$%^&*()=+|\\/:\"'";
+      string invalidCharacters = " ;,<>[]{}`~!#$%^&*()=+|\\/:\"'°ºª§¹²³£¢¬₢";
 
       // Verifica se o caractere digitado é um espaço em branco ou um caractere inválido
       if (char.IsWhiteSpace(e.KeyChar) || invalidCharacters.Contains(e.KeyChar))
@@ -504,7 +509,19 @@ namespace Views
         string email = inpEmail.Text;
         if (email.EndsWith("."))
         {
-          // Ignora a entrada de ponto final adicionada
+          // Ignora a entrada de ponto final
+          e.Handled = true;
+        }
+      }
+
+      // Verifica se o caractere digitado é um @
+      if (e.KeyChar == '@')
+      {
+        // Verifica se já existem @ consecutivos
+        string email = inpEmail.Text;
+        if (email.EndsWith("@"))
+        {
+          // Ignora a entrada de @
           e.Handled = true;
         }
       }
@@ -519,10 +536,10 @@ namespace Views
       }
 
       // Define os caracteres inválidos em um endereço de email
-      string invalidCharacters = " ;,<>[]{}`~!#$%&?^*()=+|\\/:\"'";
+      string invalidCharacters = " ;,<>[]{}`~!#$%^&*()=+|\\/:\"'°ºª§¹²³£¢¬₢";
 
       // Verifica se o email possui formato válido
-      string regexPattern = @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$";
+      string regexPattern = @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$";
       if (!Regex.IsMatch(email, regexPattern) || email.Contains(" ") || email.IndexOfAny(invalidCharacters.ToCharArray()) != -1)
       {
         return false;
@@ -559,7 +576,7 @@ namespace Views
       if (!DtNascimentoValida(dt_nascimento))
       {
         MessageBox.Show(
-          "Data de nascimento inválida! Certifique-se de que a data seja válida, anterior à data atual e que indique uma idade entre 7 e 125 anos.",
+          "Data de nascimento inválida! Certifique-se de que a data seja válida, anterior à data atual e que indique uma idade maior que 7 anos.",
           "Erro",
           MessageBoxButtons.OK,
           MessageBoxIcon.Error
@@ -612,7 +629,7 @@ namespace Views
       if (!EmailValido(email))
       {
         MessageBox.Show(
-          "Email inválido! Insira um endereço de e-mail válido no formato: usuario@dominio.com e certifique-se de que não contenha os seguintes caracteres inválidos: ;,<>[]{}`~!#$%&?^*()=+|\\/:\"'",
+          "Email inválido! Insira um endereço de e-mail válido no formato: usuario@dominio.com e certifique-se de inserir apenas letras, números e os seguintes caracteres: ._-",
           "Erro",
           MessageBoxButtons.OK,
           MessageBoxIcon.Error

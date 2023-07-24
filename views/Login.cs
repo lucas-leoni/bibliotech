@@ -14,7 +14,12 @@ namespace Views
     private CheckBox cbxExibirSenha;
     public Login()
     {
+      MaximizeBox = false;
+      StartPosition = FormStartPosition.CenterScreen;
+      BackgroundImage = Image.FromFile("img/fundo.png");
       lblUsuario = new Label();
+      lblUsuario.ForeColor = Color.White;
+      lblUsuario.BackColor = Color.Transparent;
       lblUsuario.Text = "Usuário:";
       lblUsuario.Location = new System.Drawing.Point(90, 75);
 
@@ -27,6 +32,8 @@ namespace Views
       inpUsuario.Size = new System.Drawing.Size(200, 25);
 
       lblSenha = new Label();
+      lblSenha.BackColor = Color.Transparent;
+      lblSenha.ForeColor = Color.White;
       lblSenha.Text = "Senha:";
       lblSenha.Location = new System.Drawing.Point(
         inpUsuario.Location.X,
@@ -43,6 +50,8 @@ namespace Views
       inpSenha.Size = new System.Drawing.Size(200, 25);
 
       cbxExibirSenha = new CheckBox();
+      cbxExibirSenha.BackColor = Color.Transparent;
+      cbxExibirSenha.ForeColor = Color.White;
       cbxExibirSenha.Location = new System.Drawing.Point(
         inpSenha.Location.X,
         inpSenha.Location.Y + 35
