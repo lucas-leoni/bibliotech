@@ -145,9 +145,9 @@ namespace Views
       btnAdd.Text = "Adicionar";
       int btnAddX = tabela.Left + tabela.Width - btnAdd.Width;
       btnAdd.Location = new System.Drawing.Point(btnAddX, 75);
-      btnAdd.BackColor = Color.FromArgb(0, 123, 255); // Cor azul do Bootstrap (btn-primary)
+      /* btnAdd.BackColor = Color.FromArgb(0, 123, 255); // Cor azul do Bootstrap (btn-primary)
       btnAdd.ForeColor = Color.White;
-      btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 123, 255);
+      btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 123, 255); */
       btnAdd.Click += btnAdd_Click;
 
       // Adicionando em tela
@@ -178,8 +178,8 @@ namespace Views
       // Adiciona um evento para validação do campo endereço
       inpEndereco.KeyPress += InpEndereco_KeyPress;
 
-      btnAdd.MouseHover += btnAdd_MouseHover;
-      btnAdd.MouseLeave += btnAdd_MouseLeave;
+      /* btnAdd.MouseHover += btnAdd_MouseHover;
+      btnAdd.MouseLeave += btnAdd_MouseLeave; */
       Load += Form_Load;
     }
 
@@ -257,7 +257,17 @@ namespace Views
     {
       // Adiciona os dados à tabela usando uma nova linha
       DataGridViewRow row = new DataGridViewRow();
-      row.CreateCells(tabela, id, nome, dt_nascimento.ToString("dd/MM/yyyy"), endereco, telefone, email, "✏️", "🗑️");
+      row.CreateCells(
+        tabela,
+        id,
+        nome,
+        dt_nascimento.ToString("dd/MM/yyyy"),
+        endereco,
+        telefone,
+        email,
+        "✏️",
+        "🗑️"
+      );
       tabela.Rows.Add(row);
     }
 
@@ -403,7 +413,7 @@ namespace Views
       if (!NomeValido(nome))
       {
         MessageBox.Show(
-          "Nome inválido! Insira um nome válido com pelo menos 3 caracteres e apenas letras.",
+          "Nome inválido! Insira um nome com pelo menos 3 caracteres e apenas letras.",
           "Erro",
           MessageBoxButtons.OK,
           MessageBoxIcon.Error
@@ -421,7 +431,7 @@ namespace Views
       if (!EnderecoValido(endereco))
       {
         MessageBox.Show(
-          "Endereço inválido! Insira um endereço válido com até 120 caracteres e apenas letras, números, vírgulas e traços.",
+          "Endereço inválido! Insira um endereço com no mínimo 10 e no máximo 120 caracteres, contendo apenas letras, números, vírgulas e traços.",
           "Erro",
           MessageBoxButtons.OK,
           MessageBoxIcon.Error
@@ -439,7 +449,7 @@ namespace Views
       if (!TelefoneValido(telefone))
       {
         MessageBox.Show(
-          "Telefone inválido! Insira um telefone celular com 11 dígitos. Ex: (xx) 9xxxx-xxxx",
+          "Telefone inválido! Insira um telefone celular com 11 dígitos no formato: (xx) 9xxxx-xxxx",
           "Erro",
           MessageBoxButtons.OK,
           MessageBoxIcon.Error
@@ -473,7 +483,7 @@ namespace Views
       inpEmail.Clear();
     }
 
-    private void btnAdd_MouseHover(object sender, EventArgs e)
+    /* private void btnAdd_MouseHover(object sender, EventArgs e)
     {
       btnAdd.BackColor = Color.FromArgb(0, 86, 179); // Cor de hover do Bootstrap btn-primary
       btnAdd.ForeColor = Color.White;
@@ -485,12 +495,12 @@ namespace Views
       btnAdd.BackColor = Color.FromArgb(0, 123, 255); // Cor normal do Bootstrap btn-primary
       btnAdd.ForeColor = Color.White;
       btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 123, 255);
-    }
+    } */
 
     public void btnAdd_Click(object sender, EventArgs e)
     {
       Insert();
-      Limpar();
+      /* Limpar(); */
     }
 
     public void Insert()

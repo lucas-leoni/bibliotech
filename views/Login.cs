@@ -74,6 +74,20 @@ namespace Views
       Controls.Add(cbxExibirSenha);
       Controls.Add(bntLogin);
     }
+
+    private void AlternarExibicaoSenha(object sender, EventArgs e)
+    {
+      inpSenha.UseSystemPasswordChar = !cbxExibirSenha.Checked;
+    }
+
+    public void Limpar()
+    {
+      // Limpando o texto dos inputs
+      inpUsuario.Clear();
+      inpSenha.Clear();
+      cbxExibirSenha.Checked = false;
+    }
+
     private void Logar(object sender, EventArgs e)
     {
       string login = inpUsuario.Text;
@@ -117,15 +131,11 @@ namespace Views
       }
       else
       {
+        Limpar();
         menu = new Menu(this);
         menu.Show();
         this.Hide();
       }
-    }
-
-    private void AlternarExibicaoSenha(object sender, EventArgs e)
-    {
-      inpSenha.UseSystemPasswordChar = !cbxExibirSenha.Checked;
     }
   }
 }
