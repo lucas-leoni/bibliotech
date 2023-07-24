@@ -178,6 +178,8 @@ namespace Views
       // Adiciona um evento para validação do campo endereço
       inpEndereco.KeyPress += InpEndereco_KeyPress;
 
+      inpEmail.KeyPress += inpEmail_KeyPress;
+
       /* btnAdd.MouseHover += btnAdd_MouseHover;
       btnAdd.MouseLeave += btnAdd_MouseLeave; */
       Load += Form_Load;
@@ -484,6 +486,30 @@ namespace Views
       }
     }
 
+    private void inpEmail_KeyPress(object sender, KeyPressEventArgs e)
+    {
+      // Define os caracteres inválidos em um endereço de email
+      string invalidCharacters = " ;,<>[]{}`~!#$%^&*()=+|\\/:\"'";
+
+      // Verifica se o caractere digitado é um espaço em branco ou um caractere inválido
+      if (char.IsWhiteSpace(e.KeyChar) || invalidCharacters.Contains(e.KeyChar))
+      {
+        e.Handled = true; // Cancela a digitação do caractere
+      }
+
+      // Verifica se o caractere digitado é um ponto final
+      if (e.KeyChar == '.')
+      {
+        // Verifica se já existem pontos finais consecutivos
+        string email = inpEmail.Text;
+        if (email.EndsWith("."))
+        {
+          // Ignora a entrada de ponto final adicionada
+          e.Handled = true;
+        }
+      }
+    }
+
     private bool EmailValido(string email)
     {
       // Verifica se o email está vazio ou é nulo
@@ -492,15 +518,12 @@ namespace Views
         return false;
       }
 
-      // Verifica se o email contém espaços em branco
-      if (email.Contains(" "))
-      {
-        return false;
-      }
+      // Define os caracteres inválidos em um endereço de email
+      string invalidCharacters = " ;,<>[]{}`~!#$%&?^*()=+|\\/:\"'";
 
       // Verifica se o email possui formato válido
-      string regexPattern = @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";
-      if (!Regex.IsMatch(email, regexPattern))
+      string regexPattern = @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$";
+      if (!Regex.IsMatch(email, regexPattern) || email.Contains(" ") || email.IndexOfAny(invalidCharacters.ToCharArray()) != -1)
       {
         return false;
       }
@@ -589,7 +612,7 @@ namespace Views
       if (!EmailValido(email))
       {
         MessageBox.Show(
-          "Email inválido! Insira um endereço de e-mail válido no formato: usuario@dominio.com",
+          "Email inválido! Insira um endereço de e-mail válido no formato: usuario@dominio.com e certifique-se de que não contenha os seguintes caracteres inválidos: ;,<>[]{}`~!#$%&?^*()=+|\\/:\"'",
           "Erro",
           MessageBoxButtons.OK,
           MessageBoxIcon.Error
