@@ -455,12 +455,16 @@ namespace Views
 
       // Verifica se o comprimento máximo foi atingido (120 caracteres)
       if (inpEndereco.Text.Length >= 120)
+      {
         e.Handled = true;
+      }
 
       // Utiliza uma expressão regular para permitir apenas letras, números, vírgulas e traços
       string allowedCharsPattern = @"^[a-zA-ZÀ-ÿ0-9,' -]$";
       if (!Regex.IsMatch(e.KeyChar.ToString(), allowedCharsPattern))
+      {
         e.Handled = true;
+      }
     }
 
     private bool EnderecoValido(string endereco)
@@ -512,6 +516,10 @@ namespace Views
 
     private void inpEmail_KeyPress(object sender, KeyPressEventArgs e)
     {
+      // Verifica se a tecla pressionada é Backspace, Tab ou Enter
+      if (char.IsControl(e.KeyChar))
+        return;
+      
       // Define os caracteres inválidos em um endereço de email
       string invalidCharacters = " ;,<>[]{}`~!#$%^&*()=+|\\/:\"'°ºª§¹²³£¢¬₢";
 
@@ -543,6 +551,11 @@ namespace Views
           // Ignora a entrada de @
           e.Handled = true;
         }
+      }
+
+      // Verifica se o comprimento máximo foi atingido (50 caracteres)
+      if (inpEmail.Text.Length >= 50) {
+        e.Handled = true;
       }
     }
 
