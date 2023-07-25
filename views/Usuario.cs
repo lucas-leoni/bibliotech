@@ -300,6 +300,18 @@ namespace Views
         return;
       }
 
+      // Verifica se o caractere digitado é aspas simples
+      if (e.KeyChar == '\'')
+      {
+        // Verifica se já existem aspas simples consecutivas
+        string nome = inpNome.Text;
+        if (nome.EndsWith("'"))
+        {
+          // Ignora a entrada de aspas simples
+          e.Handled = true;
+        }
+      }
+
       // Verifica se o comprimento máximo foi atingido (120 caracteres)
       if (inpNome.Text.Length >= 120)
       {
@@ -307,7 +319,7 @@ namespace Views
       }
 
       // Utiliza a expressão regular para permitir apenas letras e espaços em branco
-      string allowedCharsPattern = "^[a-zA-Z ]$";
+      string allowedCharsPattern = "^[a-zA-ZÀ-ÿ' ]+$";
       if (!Regex.IsMatch(e.KeyChar.ToString(), allowedCharsPattern))
       {
         e.Handled = true;
@@ -331,8 +343,8 @@ namespace Views
         return false;
       }
 
-      // Expressão regular para verificar se o nome contém apenas letras e espaços em branco
-      Regex regex = new Regex("^[a-zA-Z ]+$");
+      // Expressão regular para verificar se o nome contém apenas letras, espaços em branco e acentos
+      Regex regex = new Regex("^[a-zA-ZÀ-ÿ' ]+$");
 
       // Verifica se o nome corresponde à expressão regular
       if (!regex.IsMatch(nome))
@@ -429,12 +441,24 @@ namespace Views
       if (char.IsControl(e.KeyChar))
         return;
 
+      // Verifica se o caractere digitado é aspas simples
+      if (e.KeyChar == '\'')
+      {
+        // Verifica se já existem aspas simples consecutivas
+        string endereco = inpEndereco.Text;
+        if (endereco.EndsWith("'"))
+        {
+          // Ignora a entrada de aspas simples
+          e.Handled = true;
+        }
+      }
+
       // Verifica se o comprimento máximo foi atingido (120 caracteres)
       if (inpEndereco.Text.Length >= 120)
         e.Handled = true;
 
       // Utiliza uma expressão regular para permitir apenas letras, números, vírgulas e traços
-      string allowedCharsPattern = @"^[a-zA-Z0-9, -]$";
+      string allowedCharsPattern = @"^[a-zA-ZÀ-ÿ0-9,' -]$";
       if (!Regex.IsMatch(e.KeyChar.ToString(), allowedCharsPattern))
         e.Handled = true;
     }
@@ -457,7 +481,7 @@ namespace Views
       }
 
       // Utiliza a expressão regular para validar o endereço completo
-      string allowedCharsPattern = @"^[a-zA-Z0-9, -]{1,120}$";
+      string allowedCharsPattern = @"^[a-zA-ZÀ-ÿ0-9,' -]+$";
       if (!Regex.IsMatch(endereco, allowedCharsPattern))
       {
         return false;
@@ -695,15 +719,6 @@ namespace Views
           "Sucesso!",
           MessageBoxButtons.OK,
           MessageBoxIcon.Information
-        );
-      }
-      else
-      {
-        MessageBox.Show(
-          "Não foi possível adicionar o usuário!",
-          "Erro!",
-          MessageBoxButtons.OK,
-          MessageBoxIcon.Error
         );
       }
     }
