@@ -150,9 +150,6 @@ namespace Views
       btnAdd.Text = "Adicionar";
       int btnAddX = tabela.Left + tabela.Width - btnAdd.Width;
       btnAdd.Location = new System.Drawing.Point(btnAddX, 75);
-      /* btnAdd.BackColor = Color.FromArgb(0, 123, 255); // Cor azul do Bootstrap (btn-primary)
-      btnAdd.ForeColor = Color.White;
-      btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 123, 255); */
       btnAdd.Click += btnAdd_Click;
 
       // Adicionando em tela
@@ -185,8 +182,6 @@ namespace Views
 
       inpEmail.KeyPress += inpEmail_KeyPress;
 
-      /* btnAdd.MouseHover += btnAdd_MouseHover;
-      btnAdd.MouseLeave += btnAdd_MouseLeave; */
       Load += Form_Load;
     }
 
@@ -663,36 +658,52 @@ namespace Views
       inpEmail.Clear();
     }
 
-    /* private void btnAdd_MouseHover(object sender, EventArgs e)
-    {
-      btnAdd.BackColor = Color.FromArgb(0, 86, 179); // Cor de hover do Bootstrap btn-primary
-      btnAdd.ForeColor = Color.White;
-      btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 86, 179);
-    }
-
-    private void btnAdd_MouseLeave(object sender, EventArgs e)
-    {
-      btnAdd.BackColor = Color.FromArgb(0, 123, 255); // Cor normal do Bootstrap btn-primary
-      btnAdd.ForeColor = Color.White;
-      btnAdd.FlatAppearance.BorderColor = Color.FromArgb(0, 123, 255);
-    } */
-
     public void btnAdd_Click(object sender, EventArgs e)
     {
       Insert();
-      /* Limpar(); */
     }
 
     public void Insert()
     {
       if (ValidarCampos())
       {
-        // Se todos os campos são válidos, continue com a lógica de salvamento ou outras ações.
+        // Obtém os valores do form
+        string nome = inpNome.Text;
+        DateTime dt_nascimento = inpDtNascimento.Value;
+        string endereco = inpEndereco.Text;
+        string telefone = inpTelefone.Text;
+        string email = inpEmail.Text;
+
+        // Constrói um objeto Usuario
+        Controllers.UsuarioController.AddUsuario(
+          nome,
+          dt_nascimento,
+          endereco,
+          telefone,
+          email
+        );
+
+        // Atualiza a tabela
+        Refresh();
+
+        // Limpando o texto dos inputs
+        Limpar();
+
+        // Exibe o MessageBox de usuário adicionado com sucesso
         MessageBox.Show(
-          "Todos os campos válidos!",
+          "Usuário adicionado com sucesso!",
           "Sucesso!",
           MessageBoxButtons.OK,
           MessageBoxIcon.Information
+        );
+      }
+      else
+      {
+        MessageBox.Show(
+          "Não foi possível adicionar o usuário!",
+          "Erro!",
+          MessageBoxButtons.OK,
+          MessageBoxIcon.Error
         );
       }
     }

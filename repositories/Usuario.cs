@@ -39,7 +39,7 @@ namespace Repositories
             else
             {
               MessageBox.Show(
-                "Não foi possível cadastrar o usuário!",
+                "Não foi possível adicionar o usuário!",
                 "Erro!",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error
