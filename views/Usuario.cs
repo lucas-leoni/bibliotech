@@ -95,8 +95,8 @@ namespace Views
       inpTelefone = new MaskedTextBox();
       lblEmail = new Label();
       inpEmail = new TextBox();
-      btnAdd = new Button();
       btnLimpar = new Button();
+      btnAdd = new Button();
 
       int margin_r = 51;
       int margin_b = 23;
@@ -780,7 +780,7 @@ namespace Views
             // Atualiza a tabela
             Refresh();
 
-            // Exibe o MessageBox de usuário atualizado com sucesso
+            // Exibe o MessageBox de usuário editado com sucesso
             MessageBox.Show(
               "Usuário editado com sucesso!",
               "Sucesso!",

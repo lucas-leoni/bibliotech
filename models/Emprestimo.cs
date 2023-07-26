@@ -5,16 +5,18 @@ namespace Models
   public class Emprestimo
   {
     public int CodEmprestimo { get; set; }
-    public string DtEmprestimo { get; set; }
-    public string DtPrevDevolucao { get; set; }
-    public string DtRealDevolucao { get; set; }
+    public DateTime DtEmprestimo { get; set; }
+    public DateTime DtPrevDevolucao { get; set; }
+    public DateTime? DtRealDevolucao { get; set; }
     public int CodLivro { get; set; }
     public int IdUsuario { get; set; }
 
+    public Emprestimo() { }
+
     public Emprestimo(
-			string dt_emprestimo,
-			string dt_prev_devolucao,
-			string dt_real_devolucao,
+			DateTime dt_emprestimo,
+			DateTime dt_prev_devolucao,
+			DateTime? dt_real_devolucao,
 			int cod_livro,
 			int id_usuario
     )
@@ -25,12 +27,12 @@ namespace Models
       this.CodLivro = cod_livro;
       this.IdUsuario = id_usuario;
 
-      Repositories.EmprestimoRepository.AddEmprestimo(this);
+      Repositories.EmprestimoRepository.Emprestar(this);
     }
 
-    public void getIndex(int cod_emprestimo)
+    public static void LimparList()
     {
-      this.CodEmprestimo = cod_emprestimo;
+      Repositories.EmprestimoRepository.LimparList();
     }
 
     public static List<Models.Emprestimo> ListEmprestimos()
@@ -44,24 +46,24 @@ namespace Models
     }
 
     public static void UpdateEmprestimo(
-			int cod_emprestimo,
-			string dt_emprestimo,
-			string dt_prev_devolucao,
-			string dt_real_devolucao,
-			int cod_livro,
-			int id_usuario
+      int cod_emprestimo,
+      Emprestimo emprestimo
     )
     {
-      Emprestimo emprestimo = Emprestimo.GetEmprestimo(cod_emprestimo);
-      if (emprestimo != null)
-      {
-        emprestimo.DtEmprestimo = dt_emprestimo;
-        emprestimo.DtPrevDevolucao = dt_prev_devolucao;
-        emprestimo.DtRealDevolucao = dt_real_devolucao;
-        emprestimo.CodLivro = cod_livro;
-        emprestimo.IdUsuario = id_usuario;
+      // Obtém o empréstimo existente no banco de dados
+      Emprestimo emprestimo_existente = GetEmprestimo(cod_emprestimo);
 
-        Repositories.EmprestimoRepository.UpdateEmprestimo(cod_emprestimo, emprestimo);
+      if (emprestimo_existente != null)
+      {
+        // Atualiza as propriedades do empréstimo existente com os novos valores
+        emprestimo_existente.DtEmprestimo = emprestimo.DtEmprestimo;
+        emprestimo_existente.DtPrevDevolucao = emprestimo.DtPrevDevolucao;
+        emprestimo_existente.DtRealDevolucao = emprestimo.DtRealDevolucao;
+        emprestimo_existente.CodLivro = emprestimo.CodLivro;
+        emprestimo_existente.IdUsuario = emprestimo.IdUsuario;
+
+        // Chama o método de update do repository
+        Repositories.EmprestimoRepository.UpdateEmprestimo(cod_emprestimo, emprestimo_existente);
       }
     }
 
@@ -76,7 +78,7 @@ namespace Models
 
     public override string ToString()
     {
-      return $"------------------------\n{CodEmprestimo + 1}º empréstimo\nData do empréstimo: {DtEmprestimo}\nData prevista de devolução: {DtPrevDevolucao}\nData real de devolução: {DtRealDevolucao}\nCódigo do livro: {CodLivro}\nID do usuário: {IdUsuario}\n------------------------\n";
+      return $"------------------------\nData do empréstimo: {DtEmprestimo}\nData prevista de devolução: {DtPrevDevolucao}\nData real de devolução: {DtRealDevolucao}\nCódigo do livro: {CodLivro}\nID do usuário: {IdUsuario}\n------------------------\n";
     }
   }
 }

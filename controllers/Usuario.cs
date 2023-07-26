@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace Controllers
 {
@@ -43,7 +42,6 @@ namespace Controllers
       Models.Usuario usuario
     )
     {
-
       Models.Usuario.UpdateUsuario(
         id_usuario,
         usuario

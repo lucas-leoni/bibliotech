@@ -18,7 +18,9 @@ namespace Repositories
           // Abre a conexão com o banco
           conexao.Open();
 
-          string insert_query = "INSERT INTO usuario (nome, dt_nascimento, endereco, telefone, email) VALUES (@Nome, @DtNascimento, @Endereco, @Telefone, @Email)";
+          string insert_query = "INSERT INTO usuario " +
+          "(nome, dt_nascimento, endereco, telefone, email) " +
+          "VALUES (@Nome, @DtNascimento, @Endereco, @Telefone, @Email)";
           MySqlCommand comando_insert = new MySqlCommand(insert_query, conexao);
 
           if (usuario != null)
@@ -49,7 +51,7 @@ namespace Repositories
           else
           {
             MessageBox.Show(
-              "Não foi possível cadastrar o usuário!",
+              "Não foi possível adicionar o usuário!",
               "Erro!",
               MessageBoxButtons.OK,
               MessageBoxIcon.Error
@@ -70,8 +72,6 @@ namespace Repositories
           );
         }
       }
-
-      usuarios.Add(usuario);
     }
 
     public static List<Models.Usuario> ListUsuarios()
@@ -97,9 +97,8 @@ namespace Repositories
           foreach (DataRow row in table.Rows)
           {
             // Aqui você pode acessar os dados retornados pela consulta SELECT
-            int id = Convert.ToInt32(row["id_usuario"].ToString());
             Models.Usuario usuario = new Models.Usuario();
-            usuario.IdUsuario = id;
+            usuario.IdUsuario = Convert.ToInt32(row["id_usuario"].ToString());
             usuario.Nome = row["nome"].ToString();
             usuario.DtNascimento = Convert.ToDateTime(row["dt_nascimento"]);
             usuario.Endereco = row["endereco"].ToString();
@@ -146,7 +145,10 @@ namespace Repositories
           // Abre a conexão com o banco
           conexao.Open();
 
-          string update_query = "UPDATE usuario SET nome = @Nome, dt_nascimento = @DtNascimento, endereco = @Endereco, telefone = @Telefone, email = @Email WHERE id_usuario = @IdUsuario";
+          string update_query = "UPDATE usuario " +
+          "SET nome = @Nome, dt_nascimento = @DtNascimento, " +
+          "endereco = @Endereco, telefone = @Telefone, email = @Email " +
+          "WHERE id_usuario = @IdUsuario";
           MySqlCommand comando_update = new MySqlCommand(update_query, conexao);
 
           if (usuario != null)

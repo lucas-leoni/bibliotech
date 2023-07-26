@@ -5,10 +5,15 @@ namespace Controllers
 {
   public class EmprestimoController
   {
-    public static void AddEmprestimo(
-			string dt_emprestimo,
-			string dt_prev_devolucao,
-			string dt_real_devolucao,
+    public static void LimparList()
+    {
+      Models.Emprestimo.LimparList();
+    }
+    
+    public static void Emprestar(
+			DateTime dt_emprestimo,
+			DateTime dt_prev_devolucao,
+			DateTime? dt_real_devolucao,
 			int cod_livro,
 			int id_usuario
     )
@@ -27,22 +32,19 @@ namespace Controllers
       return Models.Emprestimo.ListEmprestimos();
     }
 
+    public static Models.Emprestimo? GetEmprestimo(int cod_emprestimo)
+    {
+      return Models.Emprestimo.GetEmprestimo(cod_emprestimo);
+    }
+
     public static void UpdateEmprestimo(
 			int cod_emprestimo,
-			string dt_emprestimo,
-			string dt_prev_devolucao,
-			string dt_real_devolucao,
-			int cod_livro,
-			int id_usuario
+      Models.Emprestimo emprestimo
     )
     {
       Models.Emprestimo.UpdateEmprestimo(
 				cod_emprestimo,
-				dt_emprestimo,
-				dt_prev_devolucao,
-				dt_real_devolucao,
-				cod_livro,
-				id_usuario
+        emprestimo
       );
     }
 
