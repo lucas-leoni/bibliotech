@@ -188,17 +188,6 @@ namespace Views
 
     private void Form_Load(object sender, EventArgs e)
     {
-      // Verifica se há empréstimos cadastrados no Load do formulário
-      if (tabela.Rows.Count == 0)
-      {
-        MessageBox.Show(
-          "Não há empréstimos cadastrados no banco de dados.",
-          "Informação",
-          MessageBoxButtons.OK,
-          MessageBoxIcon.Information
-        );
-      }
-
       // Verifica se o UserControl tem um Panel pai
       if (this.Parent is Panel painelGeral && !isTableCentered)
       {
@@ -219,6 +208,17 @@ namespace Views
 
         // Define a flag como true para que a centralização só ocorra uma vez
         isTableCentered = true;
+      }
+
+      // Verifica se há empréstimos cadastrados no Load do formulário
+      if (tabela.Rows.Count == 0)
+      {
+        MessageBox.Show(
+          "Não há empréstimos cadastrados no banco de dados.",
+          "Informação",
+          MessageBoxButtons.OK,
+          MessageBoxIcon.Information
+        );
       }
     }
 
