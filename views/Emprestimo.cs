@@ -52,10 +52,13 @@ namespace Views
       tabela.Columns["Id"].ReadOnly = true;
       tabela.Columns.Add("DtEmprestimo", "Data de Empréstimo");
       tabela.Columns["DtEmprestimo"].Width = 140;
+      tabela.Columns["DtEmprestimo"].ReadOnly = true;
       tabela.Columns.Add("DtPrevDevolucao", "Data Prevista Devolução");
       tabela.Columns["DtPrevDevolucao"].Width = 160;
+      tabela.Columns["DtPrevDevolucao"].ReadOnly = true;
       tabela.Columns.Add("DtRealDevolucao", "Data Real Devolução");
       tabela.Columns["DtRealDevolucao"].Width = 140;
+      tabela.Columns["DtRealDevolucao"].ReadOnly = true;
       tabela.Columns.Add("Livro", "Livro");
       tabela.Columns["Livro"].Width = 212;
       tabela.Columns.Add("Usuario", "Usuário");
