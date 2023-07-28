@@ -526,13 +526,13 @@ namespace Views
         // Limpando o texto dos inputs
         Limpar();
 
-        // Exibe o MessageBox de livro emprestado com sucesso
+        /* // Exibe o MessageBox de livro emprestado com sucesso
         MessageBox.Show(
           "Livro emprestado com sucesso!",
           "Sucesso!",
           MessageBoxButtons.OK,
           MessageBoxIcon.Information
-        );
+        ); */
       }
     }
 

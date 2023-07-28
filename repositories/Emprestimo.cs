@@ -15,28 +15,94 @@ namespace Repositories
       {
         try
         {
-          // Abre a conexão com o banco
-          conexao.Open();
+          Models.Livro livro = Controllers.LivroController.GetLivro(emprestimo.CodLivro);
+          Models.Usuario usuario = Controllers.UsuarioController.GetUsuario(emprestimo.IdUsuario);
 
-          string insert_query = "INSERT INTO emprestimo " +
-          "(dt_emprestimo, dt_prev_devolucao, dt_real_devolucao, cod_livro, id_usuario) " +
-          "VALUES (@DtEmprestimo, @DtPrevDevolucao, @DtRealDevolucao, @CodLivro, @IdUsuario)";
-          MySqlCommand comando_insert = new MySqlCommand(insert_query, conexao);
-
-          if (emprestimo != null)
+          if (livro == null && usuario == null)
           {
-            comando_insert.Parameters.AddWithValue("@DtEmprestimo", emprestimo.DtEmprestimo);
-            comando_insert.Parameters.AddWithValue("@DtPrevDevolucao", emprestimo.DtPrevDevolucao);
-            comando_insert.Parameters.AddWithValue("@DtRealDevolucao", emprestimo.DtRealDevolucao);
-            comando_insert.Parameters.AddWithValue("@CodLivro", emprestimo.CodLivro);
-            comando_insert.Parameters.AddWithValue("@IdUsuario", emprestimo.IdUsuario);
+            MessageBox.Show(
+              "Livro e usuário não cadastrados no banco de dados!",
+              "Erro!",
+              MessageBoxButtons.OK,
+              MessageBoxIcon.Error
+            );
+            return; // Retorna sem realizar o empréstimo
+          }
+          else if (livro == null)
+          {
+            MessageBox.Show(
+              "Livro não cadastrado no banco de dados!",
+              "Erro!",
+              MessageBoxButtons.OK,
+              MessageBoxIcon.Error
+            );
+            return; // Retorna sem realizar o empréstimo
+          }
+          else if (usuario == null)
+          {
+            MessageBox.Show(
+              "Usuário não cadastrado no banco de dados!",
+              "Erro!",
+              MessageBoxButtons.OK,
+              MessageBoxIcon.Error
+            );
+            return; // Retorna sem realizar o empréstimo
+          }
+          else if (livro.Status == "Emprestado")
+          {
+            MessageBox.Show(
+              "Este livro já está emprestado no momento!",
+              "Erro!",
+              MessageBoxButtons.OK,
+              MessageBoxIcon.Error
+            );
+            return; // Retorna sem realizar o empréstimo
+          }
+          else
+          {
+            // Abre a conexão com o banco
+            conexao.Open();
 
-            int linhas_afetadas = comando_insert.ExecuteNonQuery();
-            emprestimo.CodEmprestimo = Convert.ToInt32(comando_insert.LastInsertedId);
+            string insert_query = "INSERT INTO emprestimo " +
+            "(dt_emprestimo, dt_prev_devolucao, dt_real_devolucao, cod_livro, id_usuario) " +
+            "VALUES (@DtEmprestimo, @DtPrevDevolucao, @DtRealDevolucao, @CodLivro, @IdUsuario)";
+            MySqlCommand comando_insert = new MySqlCommand(insert_query, conexao);
 
-            if (linhas_afetadas > 0)
+            if (emprestimo != null)
             {
-              emprestimos.Add(emprestimo);
+              comando_insert.Parameters.AddWithValue("@DtEmprestimo", emprestimo.DtEmprestimo);
+              comando_insert.Parameters.AddWithValue("@DtPrevDevolucao", emprestimo.DtPrevDevolucao);
+              comando_insert.Parameters.AddWithValue("@DtRealDevolucao", emprestimo.DtRealDevolucao);
+              comando_insert.Parameters.AddWithValue("@CodLivro", emprestimo.CodLivro);
+              comando_insert.Parameters.AddWithValue("@IdUsuario", emprestimo.IdUsuario);
+
+              int linhas_afetadas = comando_insert.ExecuteNonQuery();
+              emprestimo.CodEmprestimo = Convert.ToInt32(comando_insert.LastInsertedId);
+
+              if (linhas_afetadas > 0)
+              {
+                emprestimos.Add(emprestimo);
+
+                livro.Status = "Emprestado";
+                Controllers.LivroController.UpdateLivro(livro.CodLivro, livro);
+
+                // Exibe o MessageBox de livro emprestado com sucesso
+                MessageBox.Show(
+                  "Livro emprestado com sucesso!",
+                  "Sucesso!",
+                  MessageBoxButtons.OK,
+                  MessageBoxIcon.Information
+                );
+              }
+              else
+              {
+                MessageBox.Show(
+                  "Não foi possível emprestar o livro!",
+                  "Erro!",
+                  MessageBoxButtons.OK,
+                  MessageBoxIcon.Error
+                );
+              }
             }
             else
             {
@@ -47,21 +113,47 @@ namespace Repositories
                 MessageBoxIcon.Error
               );
             }
-          }
-          else
-          {
-            MessageBox.Show(
-              "Não foi possível emprestar o livro!",
-              "Erro!",
-              MessageBoxButtons.OK,
-              MessageBoxIcon.Error
-            );
-          }
 
-          // Fecha a conexão com o banco
-          conexao.Close();
+            // Fecha a conexão com o banco
+            conexao.Close();
+          }
         }
 
+        catch (MySqlException ex)
+        {
+          if (ex.Number == 1452) // Número do erro para chave estrangeira não encontrada
+          {
+            // Verifica se tanto o livro quanto o usuário não foram encontrados
+            if (ex.Message.Contains("livro") && ex.Message.Contains("usuario"))
+            {
+              MessageBox.Show(
+                  "Livro e usuário não cadastrados no banco de dados!",
+                  "Erro!",
+                  MessageBoxButtons.OK,
+                  MessageBoxIcon.Error
+              );
+            }
+            else if (ex.Message.Contains("livro"))
+            {
+              MessageBox.Show(
+                  "Livro não cadastrado no banco de dados!",
+                  "Erro!",
+                  MessageBoxButtons.OK,
+                  MessageBoxIcon.Error
+              );
+            }
+            else if (ex.Message.Contains("usuario"))
+            {
+              MessageBox.Show(
+                  "Usuário não cadastrado no banco de dados!",
+                  "Erro!",
+                  MessageBoxButtons.OK,
+                  MessageBoxIcon.Error
+              );
+            }
+          }
+        }
+        
         catch (Exception ex)
         {
           MessageBox.Show(
