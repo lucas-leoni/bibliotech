@@ -170,7 +170,7 @@ namespace Repositories
             else
             {
               MessageBox.Show(
-                "Não foi possível atualizar o usuário!",
+                "Não foi possível editar o usuário!",
                 "Erro!",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error

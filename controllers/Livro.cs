@@ -5,20 +5,25 @@ namespace Controllers
 {
   public class LivroController
   {
+    public static void LimparList()
+    {
+      Models.Livro.LimparList();
+    }
+
     public static void AddLivro(
       string titulo,
       string genero,
-      string dt_publicacao,
-      string autor,
-      string editora
+      DateTime dt_publicacao,
+      int id_autor,
+      int id_editora
     )
     {
       new Models.Livro(
         titulo,
         genero,
         dt_publicacao,
-        autor,
-        editora
+        id_autor,
+        id_editora
       );
     }
 
@@ -27,22 +32,19 @@ namespace Controllers
       return Models.Livro.ListLivros();
     }
 
+    public static Models.Livro? GetLivro(int cod_livro)
+    {
+      return Models.Livro.GetLivro(cod_livro);
+    }
+
     public static void UpdateLivro(
       int cod_livro,
-      string titulo,
-      string genero,
-      string dt_publicacao,
-      string autor,
-      string editora
+      Models.Livro livro
     )
     {
       Models.Livro.UpdateLivro(
         cod_livro,
-        titulo,
-        genero,
-        dt_publicacao,
-        autor,
-        editora
+        livro
       );
     }
 

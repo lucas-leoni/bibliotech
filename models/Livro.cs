@@ -7,31 +7,34 @@ namespace Models
     public int CodLivro { get; set; }
     public string Titulo { get; set; }
     public string Genero { get; set; }
-    public string DtPublicacao { get; set; }
-    public string Autor { get; set; }
-    public string Editora { get; set; }
+    public DateTime DtPublicacao { get; set; }
     public string Status { get; set; }
+    public int IdAutor { get; set; }
+    public int IdEditora { get; set; }
+
+    public Livro() { }
+
     public Livro(
       string titulo,
       string genero,
-      string dt_publicacao,
-      string autor,
-      string editora
+      DateTime dt_publicacao,
+      int id_autor,
+      int id_editora
     )
     {
       this.Titulo = titulo;
       this.Genero = genero;
       this.DtPublicacao = dt_publicacao;
-      this.Autor = autor;
-      this.Editora = editora;
-      this.Status = "disponível";
+      this.Status = "Disponível";
+      this.IdAutor = id_autor;
+      this.IdEditora = id_editora;
 
       Repositories.LivroRepository.AddLivro(this);
     }
 
-    public void getIndex(int cod_livro)
+    public static void LimparList()
     {
-      this.CodLivro = cod_livro;
+      Repositories.LivroRepository.LimparList();
     }
 
     public static List<Models.Livro> ListLivros()
@@ -46,23 +49,24 @@ namespace Models
 
     public static void UpdateLivro(
       int cod_livro,
-      string titulo,
-      string genero,
-      string dt_publicacao,
-      string autor,
-      string editora
+      Livro livro
     )
     {
-      Livro livro = Livro.GetLivro(cod_livro);
-      if (livro != null)
-      {
-        livro.Titulo = titulo;
-        livro.Genero = genero;
-        livro.DtPublicacao = dt_publicacao;
-        livro.Autor = autor;
-        livro.Editora = editora;
+      // Obtém o livro existente no banco de dados
+      Livro livro_existente = GetLivro(cod_livro);
 
-        Repositories.LivroRepository.UpdateLivro(cod_livro, livro);
+      if (livro_existente != null)
+      {
+        // Atualiza as propriedades do livro existente com os novos valores
+        livro_existente.Titulo = livro.Titulo;
+        livro_existente.Genero = livro.Genero;
+        livro_existente.DtPublicacao = livro.DtPublicacao;
+        livro_existente.Status = livro.Status;
+        livro_existente.IdAutor = livro.IdAutor;
+        livro_existente.IdEditora = livro.IdEditora;
+
+        // Chama o método de update do repository
+        Repositories.LivroRepository.UpdateLivro(cod_livro, livro_existente);
       }
     }
 
@@ -77,7 +81,7 @@ namespace Models
 
     public override string ToString()
     {
-      return $"------------------------\n{CodLivro + 1}º livro\nTítulo: {Titulo}\nGênero: {Genero}\nData de publicação: {DtPublicacao}\nAutor: {Autor}\nEditora: {Editora}\n------------------------\n";
+      return $"------------------------\nTítulo: {Titulo}\nGênero: {Genero}\nData de publicação: {DtPublicacao}\nStatus: {Status}\nAutor: {IdAutor}\nEditora: {IdEditora}\n------------------------\n";
     }
   }
 }

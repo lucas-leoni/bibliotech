@@ -238,13 +238,19 @@ namespace Views
       {
         foreach (var emprestimo in emprestimos)
         {
+          /* // Obtém o objeto Livro
+          Models.Livro livro = Controllers.LivroController.GetLivro(emprestimo.CodLivro); */
+
+          // Obtém o objeto Usuario
+          Models.Usuario usuario = Controllers.UsuarioController.GetUsuario(emprestimo.IdUsuario);
+
           PopulaTabela(
             emprestimo.CodEmprestimo,
             emprestimo.DtEmprestimo,
             emprestimo.DtPrevDevolucao,
             emprestimo.DtRealDevolucao,
             emprestimo.CodLivro,
-            emprestimo.IdUsuario
+            usuario.Nome
           );
         }
       }
@@ -258,8 +264,8 @@ namespace Views
       DateTime dt_emprestimo,
       DateTime dt_prev_devolucao,
       DateTime? dt_real_devolucao,
-      int cod_livro,
-      int id_usuario
+      int livro,
+      string usuario
     )
     {
       // Adiciona os dados à tabela usando uma nova linha
@@ -271,8 +277,8 @@ namespace Views
         dt_prev_devolucao.ToString("dd/MM/yyyy"),
         // Verifica se dt_real_devolucao é nula antes de exibir no DataGridView
         dt_real_devolucao.HasValue ? dt_real_devolucao.Value.ToString("dd/MM/yyyy") : "",
-        cod_livro,
-        id_usuario,
+        livro,
+        usuario,
         "✏️",
         "🗑️",
         "✔️"
@@ -636,7 +642,7 @@ namespace Views
 
           // Atualiza a tabela
           Refresh();
-          
+
           MessageBox.Show(
             "Este livro já foi devolvido!",
             "Aviso!",
