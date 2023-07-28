@@ -178,6 +178,7 @@ namespace Views
 
       tabela.CellContentClick += Update;
       tabela.CellContentClick += Delete;
+      tabela.CellContentClick += Devolver;
       tabela.CellMouseEnter += tabela_CellMouseEnter;
 
       // Adiciona um evento para validação do campo livro
@@ -273,13 +274,16 @@ namespace Views
         cod_livro,
         id_usuario,
         "✏️",
-        "🗑️"
+        "🗑️",
+        "✔️"
       );
       tabela.Rows.Add(row);
     }
 
     private void tabela_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
     {
+      tabela.Cursor = Cursors.Default;
+
       if (e.RowIndex >= 0 && (e.ColumnIndex == tabela.Columns["Editar"].Index ||
       e.ColumnIndex == tabela.Columns["Excluir"].Index ||
       e.ColumnIndex == tabela.Columns["Devolver"].Index))
@@ -288,15 +292,37 @@ namespace Views
 
         if (e.ColumnIndex == tabela.Columns["Editar"].Index)
         {
-          tooltipText = "Editar Empréstimo";
+          DataGridViewRow row = tabela.Rows[e.RowIndex];
+          if (!string.IsNullOrEmpty(row.Cells["DtRealDevolucao"].Value.ToString()))
+          {
+            tabela.Cursor = Cursors.No;
+            tooltipText = "🚫";
+          }
+          else
+          {
+            tooltipText = "Editar Empréstimo";
+            tabela.Cursor = Cursors.Default;
+          }
         }
         else if (e.ColumnIndex == tabela.Columns["Excluir"].Index)
         {
           tooltipText = "Excluir Empréstimo";
+          tabela.Cursor = Cursors.Default;
         }
         else if (e.ColumnIndex == tabela.Columns["Devolver"].Index)
         {
-          tooltipText = "Devolver Livro";
+          DataGridViewRow row = tabela.Rows[e.RowIndex];
+
+          if (!string.IsNullOrEmpty(row.Cells["DtRealDevolucao"].Value.ToString()))
+          {
+            tabela.Cursor = Cursors.No;
+            tooltipText = "🚫";
+          }
+          else
+          {
+            tooltipText = "Devolver Livro";
+            tabela.Cursor = Cursors.Default;
+          }
         }
 
         tabela.Rows[e.RowIndex].Cells[e.ColumnIndex].ToolTipText = tooltipText;
@@ -463,10 +489,10 @@ namespace Views
 
     public void btnAdd_Click(object sender, EventArgs e)
     {
-      Insert();
+      Emprestar();
     }
 
-    public void Insert()
+    public void Emprestar()
     {
       if (ValidarCampos())
       {
@@ -508,68 +534,179 @@ namespace Views
     {
       if (e.RowIndex >= 0 && e.ColumnIndex == tabela.Columns["Editar"].Index)
       {
-        // Exibe a confirmação de edição
-        DialogResult result = MessageBox.Show(
-          "Tem certeza de que deseja editar este empréstimo?",
-          "Confirmação",
-          MessageBoxButtons.YesNo,
-          MessageBoxIcon.Question
-        );
+        DataGridViewRow row = tabela.Rows[e.RowIndex];
 
-        if (result == DialogResult.Yes)
+        if (!string.IsNullOrEmpty(row.Cells["DtRealDevolucao"].Value.ToString()))
         {
-          DataGridViewRow row = tabela.Rows[e.RowIndex];
+          tabela.Cursor = Cursors.Default;
 
-          // Obtém o valor do campo Id
-          int cod_emprestimo = Convert.ToInt32(row.Cells["Id"].Value);
+          // Atualiza a tabela
+          Refresh();
 
-          // Obtém os valores das outras colunas
-          DateTime dt_emprestimo = Convert.ToDateTime(row.Cells["DtEmprestimo"].Value);
-          DateTime dt_prev_devolucao = Convert.ToDateTime(row.Cells["DtPrevDevolucao"].Value);
-          DateTime dt_real_devolucao = Convert.ToDateTime(row.Cells["DtRealDevolucao"].Value);
-          int cod_livro = Convert.ToInt32(row.Cells["Livro"].Value);
-          int id_usuario = Convert.ToInt32(row.Cells["Usuario"].Value);
-
-          // Obtém o objeto Emprestimo
-          Models.Emprestimo emprestimo = Controllers.EmprestimoController.GetEmprestimo(cod_emprestimo);
-
-          if (emprestimo != null)
-          {
-            // Atualiza as propriedades do objeto emprestimo existente
-            emprestimo.DtEmprestimo = dt_emprestimo;
-            emprestimo.DtPrevDevolucao = dt_prev_devolucao;
-            emprestimo.DtRealDevolucao = dt_real_devolucao;
-            emprestimo.CodLivro = cod_livro;
-            emprestimo.IdUsuario = id_usuario;
-
-            // Chama o método de update passando o id e o objeto emprestimo
-            Controllers.EmprestimoController.UpdateEmprestimo(cod_emprestimo, emprestimo);
-
-            // Atualiza a tabela
-            Refresh();
-
-            // Exibe o MessageBox de empréstimo editado com sucesso
-            MessageBox.Show(
-              "Empréstimo editado com sucesso!",
-              "Sucesso!",
-              MessageBoxButtons.OK,
-              MessageBoxIcon.Information
-            );
-          }
-          else
-          {
-            MessageBox.Show(
-              "Empréstimo não encontrado!",
-              "Erro!",
-              MessageBoxButtons.OK,
-              MessageBoxIcon.Error
-            );
-          }
+          MessageBox.Show(
+            "Este livro já foi devolvido, não é mais possível editar este empréstimo!",
+            "Aviso!",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information
+          );
         }
         else
         {
+          // Exibe a confirmação de edição
+          DialogResult result = MessageBox.Show(
+            "Tem certeza de que deseja editar este empréstimo?",
+            "Confirmação",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question
+          );
+
+          if (result == DialogResult.Yes)
+          {
+            // Obtém o valor do campo Id
+            int cod_emprestimo = Convert.ToInt32(row.Cells["Id"].Value);
+
+            // Obtém os valores das outras colunas
+            DateTime dt_emprestimo = Convert.ToDateTime(row.Cells["DtEmprestimo"].Value);
+            DateTime dt_prev_devolucao = Convert.ToDateTime(row.Cells["DtPrevDevolucao"].Value);
+
+            // Verifica se a célula "DtRealDevolucao" é uma string vazia e define o valor apropriado
+            DateTime? dt_real_devolucao = null;
+            if (!string.IsNullOrEmpty(row.Cells["DtRealDevolucao"].Value.ToString()))
+            {
+              dt_real_devolucao = Convert.ToDateTime(row.Cells["DtRealDevolucao"].Value);
+            }
+
+            int cod_livro = Convert.ToInt32(row.Cells["Livro"].Value);
+            int id_usuario = Convert.ToInt32(row.Cells["Usuario"].Value);
+
+            // Obtém o objeto Emprestimo
+            Models.Emprestimo emprestimo = Controllers.EmprestimoController.GetEmprestimo(cod_emprestimo);
+
+            if (emprestimo != null)
+            {
+              // Atualiza as propriedades do objeto emprestimo existente
+              emprestimo.DtEmprestimo = dt_emprestimo;
+              emprestimo.DtPrevDevolucao = dt_prev_devolucao;
+              emprestimo.DtRealDevolucao = dt_real_devolucao;
+              emprestimo.CodLivro = cod_livro;
+              emprestimo.IdUsuario = id_usuario;
+
+              // Chama o método de update passando o id e o objeto emprestimo
+              Controllers.EmprestimoController.UpdateEmprestimo(cod_emprestimo, emprestimo);
+
+              // Atualiza a tabela
+              Refresh();
+
+              // Exibe o MessageBox de empréstimo editado com sucesso
+              MessageBox.Show(
+                "Empréstimo editado com sucesso!",
+                "Sucesso!",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+              );
+            }
+            else
+            {
+              MessageBox.Show(
+                "Empréstimo não encontrado!",
+                "Erro!",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+              );
+            }
+          }
+          else
+          {
+            // Atualiza a tabela
+            Refresh();
+          }
+        }
+      }
+    }
+
+    public void Devolver(object sender, DataGridViewCellEventArgs e)
+    {
+      if (e.RowIndex >= 0 && e.ColumnIndex == tabela.Columns["Devolver"].Index)
+      {
+        DataGridViewRow row = tabela.Rows[e.RowIndex];
+
+        if (!string.IsNullOrEmpty(row.Cells["DtRealDevolucao"].Value.ToString()))
+        {
+          tabela.Cursor = Cursors.Default;
+
           // Atualiza a tabela
           Refresh();
+          
+          MessageBox.Show(
+            "Este livro já foi devolvido!",
+            "Aviso!",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information
+          );
+        }
+        else
+        {
+          // Exibe a confirmação de devolução
+          DialogResult result = MessageBox.Show(
+            "Tem certeza de que deseja devolver este livro?",
+            "Confirmação",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question
+          );
+
+          if (result == DialogResult.Yes)
+          {
+            // Obtém o valor do campo Id
+            int cod_emprestimo = Convert.ToInt32(row.Cells["Id"].Value);
+
+            // Obtém os valores das outras colunas
+            DateTime dt_emprestimo = Convert.ToDateTime(row.Cells["DtEmprestimo"].Value);
+            DateTime dt_prev_devolucao = Convert.ToDateTime(row.Cells["DtPrevDevolucao"].Value);
+            DateTime dt_real_devolucao = DateTime.Today;
+            int cod_livro = Convert.ToInt32(row.Cells["Livro"].Value);
+            int id_usuario = Convert.ToInt32(row.Cells["Usuario"].Value);
+
+            // Obtém o objeto Emprestimo
+            Models.Emprestimo emprestimo = Controllers.EmprestimoController.GetEmprestimo(cod_emprestimo);
+
+            if (emprestimo != null)
+            {
+              // Atualiza as propriedades do objeto emprestimo existente
+              emprestimo.DtEmprestimo = dt_emprestimo;
+              emprestimo.DtPrevDevolucao = dt_prev_devolucao;
+              emprestimo.DtRealDevolucao = dt_real_devolucao;
+              emprestimo.CodLivro = cod_livro;
+              emprestimo.IdUsuario = id_usuario;
+
+              // Chama o método de update passando o id e o objeto emprestimo
+              Controllers.EmprestimoController.UpdateEmprestimo(cod_emprestimo, emprestimo);
+
+              // Atualiza a tabela
+              Refresh();
+
+              // Exibe o MessageBox de livro devolvido com sucesso
+              MessageBox.Show(
+                "Livro devolvido com sucesso!",
+                "Sucesso!",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+              );
+            }
+            else
+            {
+              MessageBox.Show(
+                "Empréstimo não encontrado!",
+                "Erro!",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+              );
+            }
+          }
+          else
+          {
+            // Atualiza a tabela
+            Refresh();
+          }
         }
       }
     }

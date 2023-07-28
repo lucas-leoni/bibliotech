@@ -172,15 +172,17 @@ namespace Views
 
       tabela.CellContentClick += Update;
       tabela.CellContentClick += Delete;
-      tabela.CellMouseEnter += tabela_CellMouseEnter;
+      tabela.CellMouseEnter += Tabela_CellMouseEnter;
 
       // Adiciona um evento para validação do campo nome
-      inpNome.KeyPress += inpNome_KeyPress;
+      inpNome.KeyPress += InpNome_KeyPress;
 
       // Adiciona um evento para validação do campo endereço
       inpEndereco.KeyPress += InpEndereco_KeyPress;
 
-      inpEmail.KeyPress += inpEmail_KeyPress;
+      inpTelefone.Enter += InpTelefone_Enter;
+
+      inpEmail.KeyPress += InpEmail_KeyPress;
 
       Load += Form_Load;
     }
@@ -273,7 +275,7 @@ namespace Views
       tabela.Rows.Add(row);
     }
 
-    private void tabela_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+    private void Tabela_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
     {
       if (e.RowIndex >= 0 && (e.ColumnIndex == tabela.Columns["Editar"].Index || e.ColumnIndex == tabela.Columns["Excluir"].Index))
       {
@@ -292,7 +294,7 @@ namespace Views
       }
     }
 
-    private void inpNome_KeyPress(object sender, KeyPressEventArgs e)
+    private void InpNome_KeyPress(object sender, KeyPressEventArgs e)
     {
       // Verifica se a tecla pressionada é Backspace, Tab ou Enter
       if (char.IsControl(e.KeyChar))
@@ -494,6 +496,12 @@ namespace Views
       return true;
     }
 
+    private void InpTelefone_Enter(object sender, EventArgs e)
+    {
+      // Usando o BeginInvoke para mover o cursor para o início após o foco ser definido
+      inpTelefone.BeginInvoke(new Action(() => inpTelefone.SelectionStart = 0));
+    }
+
     private string GetDigitsOnly(string input)
     {
       string digitsOnly = Regex.Replace(input, @"\D", "");
@@ -514,12 +522,12 @@ namespace Views
       }
     }
 
-    private void inpEmail_KeyPress(object sender, KeyPressEventArgs e)
+    private void InpEmail_KeyPress(object sender, KeyPressEventArgs e)
     {
       // Verifica se a tecla pressionada é Backspace, Tab ou Enter
       if (char.IsControl(e.KeyChar))
         return;
-      
+
       // Define os caracteres inválidos em um endereço de email
       string invalidCharacters = " ;,<>[]{}`~!#$%^&*()=+|\\/:\"'°ºª§¹²³£¢¬₢";
 
@@ -554,7 +562,8 @@ namespace Views
       }
 
       // Verifica se o comprimento máximo foi atingido (50 caracteres)
-      if (inpEmail.Text.Length >= 50) {
+      if (inpEmail.Text.Length >= 50)
+      {
         e.Handled = true;
       }
     }
