@@ -126,10 +126,66 @@ namespace Repositories
 
     public static Models.Usuario? GetUsuario(int id_usuario)
     {
-      // Encontra o usuário na List com base no valor do atributo Id
-      return usuarios.Find(u => u.IdUsuario == id_usuario);
-    }
+      Models.Usuario usuario = new Models.Usuario();
+      using (MySqlConnection conexao = Repositories.Conexao.ObterConexao())
+      {
+        try
+        {
+          // Abre a conexão com o banco
+          conexao.Open();
 
+          // Consulta SQL para recuperar o usuário pelo id
+          string select_query = "SELECT * FROM usuario WHERE id_usuario = @IdUsuario";
+
+          MySqlCommand comando_select = new MySqlCommand(select_query, conexao);
+
+          if (id_usuario != null)
+          {
+            comando_select.Parameters.AddWithValue("@IdUsuario", id_usuario);
+
+            MySqlDataAdapter bdAdapter = new MySqlDataAdapter(comando_select);
+
+            DataSet dbDataSet = new DataSet();
+            bdAdapter.Fill(dbDataSet, "usuario");
+            DataTable table = dbDataSet.Tables["usuario"];
+
+            foreach (DataRow row in table.Rows)
+            {
+              // Aqui você pode acessar os dados retornados pela consulta SELECT
+              usuario.IdUsuario = Convert.ToInt32(row["id_usuario"].ToString());
+              usuario.Nome = row["nome"].ToString();
+              usuario.DtNascimento = Convert.ToDateTime(row["dt_nascimento"]);
+              usuario.Endereco = row["endereco"].ToString();
+              usuario.Telefone = row["telefone"].ToString();
+              usuario.Email = row["email"].ToString();
+            }
+          }
+          else
+          {
+            MessageBox.Show(
+              "Usuário não encontrado!",
+              "Erro!",
+              MessageBoxButtons.OK,
+              MessageBoxIcon.Error
+            );
+          }
+
+          // Fecha a conexão com o banco
+          conexao.Close();
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(
+            "Erro ao conectar ao banco de dados: " + ex.Message,
+            "Erro!",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error
+          );
+        }
+      }
+
+      return usuario;
+    }
 
     public static void LimparList()
     {

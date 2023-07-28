@@ -238,8 +238,8 @@ namespace Views
       {
         foreach (var emprestimo in emprestimos)
         {
-          /* // Obtém o objeto Livro
-          Models.Livro livro = Controllers.LivroController.GetLivro(emprestimo.CodLivro); */
+          // Obtém o objeto Livro
+          Models.Livro livro = Controllers.LivroController.GetLivro(emprestimo.CodLivro);
 
           // Obtém o objeto Usuario
           Models.Usuario usuario = Controllers.UsuarioController.GetUsuario(emprestimo.IdUsuario);
@@ -249,7 +249,7 @@ namespace Views
             emprestimo.DtEmprestimo,
             emprestimo.DtPrevDevolucao,
             emprestimo.DtRealDevolucao,
-            emprestimo.CodLivro,
+            livro.Titulo,
             usuario.Nome
           );
         }
@@ -264,7 +264,7 @@ namespace Views
       DateTime dt_emprestimo,
       DateTime dt_prev_devolucao,
       DateTime? dt_real_devolucao,
-      int livro,
+      string livro,
       string usuario
     )
     {

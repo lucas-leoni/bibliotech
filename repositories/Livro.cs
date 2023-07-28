@@ -128,8 +128,66 @@ namespace Repositories
 
     public static Models.Livro? GetLivro(int cod_livro)
     {
-      // Encontra o livro na List com base no valor do atributo Id
-      return livros.Find(l => l.CodLivro == cod_livro);
+      Models.Livro livro = new Models.Livro();
+      using (MySqlConnection conexao = Repositories.Conexao.ObterConexao())
+      {
+        try
+        {
+          // Abre a conexão com o banco
+          conexao.Open();
+
+          // Consulta SQL para recuperar o usuário pelo id
+          string select_query = "SELECT * FROM livro WHERE cod_livro = @CodLivro";
+
+          MySqlCommand comando_select = new MySqlCommand(select_query, conexao);
+
+          if (cod_livro != null)
+          {
+            comando_select.Parameters.AddWithValue("@CodLivro", cod_livro);
+
+            MySqlDataAdapter bdAdapter = new MySqlDataAdapter(comando_select);
+
+            DataSet dbDataSet = new DataSet();
+            bdAdapter.Fill(dbDataSet, "livro");
+            DataTable table = dbDataSet.Tables["livro"];
+
+            foreach (DataRow row in table.Rows)
+            {
+              // Aqui você pode acessar os dados retornados pela consulta SELECT
+              livro.CodLivro = Convert.ToInt32(row["cod_livro"].ToString());
+              livro.Titulo = row["titulo"].ToString();
+              livro.Genero = row["genero"].ToString();
+              livro.DtPublicacao = Convert.ToDateTime(row["dt_publicacao"]);
+              livro.Status = row["status"].ToString();
+              livro.IdAutor = Convert.ToInt32(row["id_autor"].ToString());
+              livro.IdEditora = Convert.ToInt32(row["id_editora"].ToString());
+            }
+          }
+          else
+          {
+            MessageBox.Show(
+              "Livro não encontrado!",
+              "Erro!",
+              MessageBoxButtons.OK,
+              MessageBoxIcon.Error
+            );
+          }
+
+          // Fecha a conexão com o banco
+          conexao.Close();
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(
+            "Erro ao conectar ao banco de dados: " + ex.Message,
+            "Erro!",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error
+          );
+        }
+      }
+
+      return livro;
     }
 
     public static void LimparList()
