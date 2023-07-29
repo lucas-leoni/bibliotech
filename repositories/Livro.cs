@@ -205,7 +205,7 @@ namespace Repositories
           conexao.Open();
 
           string update_query = "UPDATE livro " +
-          "SET titulo = @Titulo, genero = @, " +
+          "SET titulo = @Titulo, genero = @Genero, " +
           "dt_publicacao = @DtPublicacao, status = @Status, " +
           "id_autor = @IdAutor, id_editora = @IdEditora " +
           "WHERE cod_livro = @CodLivro";
