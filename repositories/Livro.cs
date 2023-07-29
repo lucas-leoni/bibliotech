@@ -19,8 +19,8 @@ namespace Repositories
           conexao.Open();
 
           string insert_query = "INSERT INTO livro " +
-          "(titulo, genero, dt_publicacao, status, id_autor, id_editora) " +
-          "VALUES (@Titulo, @Genero, @DtPublicacao, @Status, @IdAutor, @IdEditora)";
+          "(titulo, genero, dt_publicacao, status, autor, editora) " +
+          "VALUES (@Titulo, @Genero, @DtPublicacao, @Status, @Autor, @Editora)";
           MySqlCommand comando_insert = new MySqlCommand(insert_query, conexao);
 
           if (livro != null)
@@ -29,8 +29,8 @@ namespace Repositories
             comando_insert.Parameters.AddWithValue("@Genero", livro.Genero);
             comando_insert.Parameters.AddWithValue("@DtPublicacao", livro.DtPublicacao);
             comando_insert.Parameters.AddWithValue("@Status", livro.Status);
-            comando_insert.Parameters.AddWithValue("@IdAutor", livro.IdAutor);
-            comando_insert.Parameters.AddWithValue("@IdEditora", livro.IdEditora);
+            comando_insert.Parameters.AddWithValue("@Autor", livro.Autor);
+            comando_insert.Parameters.AddWithValue("@Editora", livro.Editora);
 
             int linhas_afetadas = comando_insert.ExecuteNonQuery();
             livro.CodLivro = Convert.ToInt32(comando_insert.LastInsertedId);
@@ -104,8 +104,8 @@ namespace Repositories
             livro.Genero = row["genero"].ToString();
             livro.DtPublicacao = Convert.ToDateTime(row["dt_publicacao"]);
             livro.Status = row["status"].ToString();
-            livro.IdAutor = Convert.ToInt32(row["id_autor"].ToString());
-            livro.IdEditora = Convert.ToInt32(row["id_editora"].ToString());
+            livro.Autor = row["autor"].ToString();
+            livro.Editora = row["editora"].ToString();
             livros.Add(livro);
           }
 
@@ -159,8 +159,8 @@ namespace Repositories
               livro.Genero = row["genero"].ToString();
               livro.DtPublicacao = Convert.ToDateTime(row["dt_publicacao"]);
               livro.Status = row["status"].ToString();
-              livro.IdAutor = Convert.ToInt32(row["id_autor"].ToString());
-              livro.IdEditora = Convert.ToInt32(row["id_editora"].ToString());
+              livro.Autor = row["autor"].ToString();
+              livro.Editora = row["editora"].ToString();
             }
           }
           else
@@ -207,7 +207,7 @@ namespace Repositories
           string update_query = "UPDATE livro " +
           "SET titulo = @Titulo, genero = @Genero, " +
           "dt_publicacao = @DtPublicacao, status = @Status, " +
-          "id_autor = @IdAutor, id_editora = @IdEditora " +
+          "autor = @Autor, editora = @Editora " +
           "WHERE cod_livro = @CodLivro";
           MySqlCommand comando_update = new MySqlCommand(update_query, conexao);
 
@@ -217,8 +217,8 @@ namespace Repositories
             comando_update.Parameters.AddWithValue("@Genero", livro.Genero);
             comando_update.Parameters.AddWithValue("@DtPublicacao", livro.DtPublicacao);
             comando_update.Parameters.AddWithValue("@Status", livro.Status);
-            comando_update.Parameters.AddWithValue("@IdAutor", livro.IdAutor);
-            comando_update.Parameters.AddWithValue("@IdEditora", livro.IdEditora);
+            comando_update.Parameters.AddWithValue("@Autor", livro.Autor);
+            comando_update.Parameters.AddWithValue("@Editora", livro.Editora);
             comando_update.Parameters.AddWithValue("@CodLivro", livro.CodLivro);
 
             int linhas_afetadas = comando_update.ExecuteNonQuery();

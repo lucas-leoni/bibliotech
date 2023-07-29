@@ -9,8 +9,8 @@ namespace Models
     public string Genero { get; set; }
     public DateTime DtPublicacao { get; set; }
     public string Status { get; set; }
-    public int IdAutor { get; set; }
-    public int IdEditora { get; set; }
+    public string Autor { get; set; }
+    public string Editora { get; set; }
 
     public Livro() { }
 
@@ -18,16 +18,16 @@ namespace Models
       string titulo,
       string genero,
       DateTime dt_publicacao,
-      int id_autor,
-      int id_editora
+      string autor,
+      string editora
     )
     {
       this.Titulo = titulo;
       this.Genero = genero;
       this.DtPublicacao = dt_publicacao;
       this.Status = "Disponível";
-      this.IdAutor = id_autor;
-      this.IdEditora = id_editora;
+      this.Autor = autor;
+      this.Editora = editora;
 
       Repositories.LivroRepository.AddLivro(this);
     }
@@ -62,8 +62,8 @@ namespace Models
         livro_existente.Genero = livro.Genero;
         livro_existente.DtPublicacao = livro.DtPublicacao;
         livro_existente.Status = livro.Status;
-        livro_existente.IdAutor = livro.IdAutor;
-        livro_existente.IdEditora = livro.IdEditora;
+        livro_existente.Autor = livro.Autor;
+        livro_existente.Editora = livro.Editora;
 
         // Chama o método de update do repository
         Repositories.LivroRepository.UpdateLivro(cod_livro, livro_existente);
@@ -81,7 +81,7 @@ namespace Models
 
     public override string ToString()
     {
-      return $"------------------------\nTítulo: {Titulo}\nGênero: {Genero}\nData de publicação: {DtPublicacao}\nStatus: {Status}\nAutor: {IdAutor}\nEditora: {IdEditora}\n------------------------\n";
+      return $"------------------------\nTítulo: {Titulo}\nGênero: {Genero}\nData de publicação: {DtPublicacao}\nStatus: {Status}\nAutor: {Autor}\nEditora: {Editora}\n------------------------\n";
     }
   }
 }

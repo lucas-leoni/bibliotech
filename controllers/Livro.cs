@@ -14,16 +14,16 @@ namespace Controllers
       string titulo,
       string genero,
       DateTime dt_publicacao,
-      int id_autor,
-      int id_editora
+      string autor,
+      string editora
     )
     {
       new Models.Livro(
         titulo,
         genero,
         dt_publicacao,
-        id_autor,
-        id_editora
+        autor,
+        editora
       );
     }
 
