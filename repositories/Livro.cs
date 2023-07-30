@@ -136,7 +136,7 @@ namespace Repositories
           // Abre a conexão com o banco
           conexao.Open();
 
-          // Consulta SQL para recuperar o usuário pelo id
+          // Consulta SQL para recuperar o livro pelo id
           string select_query = "SELECT * FROM livro WHERE cod_livro = @CodLivro";
 
           MySqlCommand comando_select = new MySqlCommand(select_query, conexao);

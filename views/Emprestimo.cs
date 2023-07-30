@@ -31,7 +31,7 @@ namespace Views
       tabela = new DataGridView();
 
       // Define as dimensões mínimas da tabela
-      tabela.MinimumSize = new System.Drawing.Size(1130, 275);
+      tabela.MinimumSize = new System.Drawing.Size(1315, 275);
 
       // Ajuste automático das colunas
       tabela.AutoResizeColumns();
@@ -48,7 +48,7 @@ namespace Views
 
       // Adicionando as colunas à tabela
       tabela.Columns.Add("Id", "Id");
-      tabela.Columns["Id"].Width = 46;
+      tabela.Columns["Id"].Width = 45;
       tabela.Columns["Id"].ReadOnly = true;
       tabela.Columns.Add("DtEmprestimo", "Data de Empréstimo");
       tabela.Columns["DtEmprestimo"].Width = 140;
@@ -59,10 +59,16 @@ namespace Views
       tabela.Columns.Add("DtRealDevolucao", "Data Real Devolução");
       tabela.Columns["DtRealDevolucao"].Width = 140;
       tabela.Columns["DtRealDevolucao"].ReadOnly = true;
-      tabela.Columns.Add("Livro", "Livro");
+      tabela.Columns.Add("Livro", "Título do Livro");
       tabela.Columns["Livro"].Width = 212;
-      tabela.Columns.Add("Usuario", "Usuário");
+      tabela.Columns["Livro"].ReadOnly = true;
+      tabela.Columns.Add("Usuario", "Nome do Usuário");
       tabela.Columns["Usuario"].Width = 212;
+      tabela.Columns["Usuario"].ReadOnly = true;
+      tabela.Columns.Add("CodLivro", "Cód. Livro");
+      tabela.Columns["CodLivro"].Width = 86;
+      tabela.Columns.Add("IdUsuario", "Cód. Usuário");
+      tabela.Columns["IdUsuario"].Width = 100;
 
       colunaEditar = new DataGridViewButtonColumn();
       colunaEditar.Name = "Editar";
@@ -250,7 +256,9 @@ namespace Views
             emprestimo.DtPrevDevolucao,
             emprestimo.DtRealDevolucao,
             livro.Titulo,
-            usuario.Nome
+            usuario.Nome,
+            emprestimo.CodLivro,
+            emprestimo.IdUsuario
           );
         }
       }
@@ -260,25 +268,29 @@ namespace Views
     }
 
     public void PopulaTabela(
-      int id,
+      int cod_emprestimo,
       DateTime dt_emprestimo,
       DateTime dt_prev_devolucao,
       DateTime? dt_real_devolucao,
       string livro,
-      string usuario
+      string usuario,
+      int cod_livro,
+      int id_usuario
     )
     {
       // Adiciona os dados à tabela usando uma nova linha
       DataGridViewRow row = new DataGridViewRow();
       row.CreateCells(
         tabela,
-        id,
+        cod_emprestimo,
         dt_emprestimo.ToString("dd/MM/yyyy"),
         dt_prev_devolucao.ToString("dd/MM/yyyy"),
         // Verifica se dt_real_devolucao é nula antes de exibir no DataGridView
         dt_real_devolucao.HasValue ? dt_real_devolucao.Value.ToString("dd/MM/yyyy") : "",
         livro,
         usuario,
+        cod_livro,
+        id_usuario,
         "✏️",
         "🗑️",
         "✔️"
@@ -504,9 +516,7 @@ namespace Views
       {
         // Obtém os valores do form
         DateTime dt_emprestimo = DateTime.Today;
-        /* DateTime dt_emprestimo = inpDtEmprestimo.Value; */
         DateTime dt_prev_devolucao = dt_emprestimo.AddDays(7);
-        /* DateTime dt_prev_devolucao = inpDtPrevDevolucao.Value; */
         DateTime? dt_real_devolucao = null;
         int cod_livro = Convert.ToInt32(inpLivro.Text);
         int id_usuario = Convert.ToInt32(inpUsuario.Text);
@@ -525,14 +535,6 @@ namespace Views
 
         // Limpando o texto dos inputs
         Limpar();
-
-        /* // Exibe o MessageBox de livro emprestado com sucesso
-        MessageBox.Show(
-          "Livro emprestado com sucesso!",
-          "Sucesso!",
-          MessageBoxButtons.OK,
-          MessageBoxIcon.Information
-        ); */
       }
     }
 
@@ -582,8 +584,8 @@ namespace Views
               dt_real_devolucao = Convert.ToDateTime(row.Cells["DtRealDevolucao"].Value);
             }
 
-            int cod_livro = Convert.ToInt32(row.Cells["Livro"].Value);
-            int id_usuario = Convert.ToInt32(row.Cells["Usuario"].Value);
+            int cod_livro = Convert.ToInt32(row.Cells["CodLivro"].Value);
+            int id_usuario = Convert.ToInt32(row.Cells["IdUsuario"].Value);
 
             // Obtém o objeto Emprestimo
             Models.Emprestimo emprestimo = Controllers.EmprestimoController.GetEmprestimo(cod_emprestimo);
@@ -594,6 +596,15 @@ namespace Views
               emprestimo.DtEmprestimo = dt_emprestimo;
               emprestimo.DtPrevDevolucao = dt_prev_devolucao;
               emprestimo.DtRealDevolucao = dt_real_devolucao;
+/* 
+              Models.Livro livro = Controllers.LivroController.GetLivro(emprestimo.CodLivro);
+
+              if (emprestimo.CodLivro != cod_livro)
+              {
+                livro.Status = "Disponível";
+                Controllers.LivroController.UpdateLivro(emprestimo.CodLivro, livro);
+              } */
+
               emprestimo.CodLivro = cod_livro;
               emprestimo.IdUsuario = id_usuario;
 
@@ -669,8 +680,9 @@ namespace Views
             DateTime dt_emprestimo = Convert.ToDateTime(row.Cells["DtEmprestimo"].Value);
             DateTime dt_prev_devolucao = Convert.ToDateTime(row.Cells["DtPrevDevolucao"].Value);
             DateTime dt_real_devolucao = DateTime.Today;
-            int cod_livro = Convert.ToInt32(row.Cells["Livro"].Value);
-            int id_usuario = Convert.ToInt32(row.Cells["Usuario"].Value);
+
+            int cod_livro = Convert.ToInt32(row.Cells["CodLivro"].Value);
+            int id_usuario = Convert.ToInt32(row.Cells["IdUsuario"].Value);
 
             // Obtém o objeto Emprestimo
             Models.Emprestimo emprestimo = Controllers.EmprestimoController.GetEmprestimo(cod_emprestimo);
@@ -686,6 +698,11 @@ namespace Views
 
               // Chama o método de update passando o id e o objeto emprestimo
               Controllers.EmprestimoController.UpdateEmprestimo(cod_emprestimo, emprestimo);
+
+              Models.Livro livro = Controllers.LivroController.GetLivro(emprestimo.CodLivro);
+
+              livro.Status = "Disponível";
+              Controllers.LivroController.UpdateLivro(livro.CodLivro, livro);
 
               // Atualiza a tabela
               Refresh();
