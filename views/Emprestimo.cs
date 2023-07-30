@@ -596,14 +596,19 @@ namespace Views
               emprestimo.DtEmprestimo = dt_emprestimo;
               emprestimo.DtPrevDevolucao = dt_prev_devolucao;
               emprestimo.DtRealDevolucao = dt_real_devolucao;
-/* 
-              Models.Livro livro = Controllers.LivroController.GetLivro(emprestimo.CodLivro);
+
+              Models.Livro livro_existente = Controllers.LivroController.GetLivro(emprestimo.CodLivro);
 
               if (emprestimo.CodLivro != cod_livro)
               {
-                livro.Status = "Disponível";
-                Controllers.LivroController.UpdateLivro(emprestimo.CodLivro, livro);
-              } */
+                livro_existente.Status = "Disponível";
+                Controllers.LivroController.UpdateLivro(emprestimo.CodLivro, livro_existente);
+
+                Models.Livro livro_novo = Controllers.LivroController.GetLivro(cod_livro);
+
+                livro_novo.Status = "Emprestado";
+                Controllers.LivroController.UpdateLivro(cod_livro, livro_novo);
+              }
 
               emprestimo.CodLivro = cod_livro;
               emprestimo.IdUsuario = id_usuario;
@@ -757,6 +762,11 @@ namespace Views
 
           if (emprestimo != null)
           {
+            Models.Livro livro = Controllers.LivroController.GetLivro(emprestimo.CodLivro);
+
+            livro.Status = "Disponível";
+            Controllers.LivroController.UpdateLivro(livro.CodLivro, livro);
+
             // Chama o método de exclusão passando o código do emprestimo
             Controllers.EmprestimoController.DeleteEmprestimo(cod_emprestimo);
 
