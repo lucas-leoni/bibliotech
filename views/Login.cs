@@ -17,6 +17,7 @@ namespace Views
       MaximizeBox = false;
       StartPosition = FormStartPosition.CenterScreen;
       BackgroundImage = Image.FromFile("img/fundo.png");
+      BackgroundImageLayout = ImageLayout.Stretch;
       lblUsuario = new Label();
       lblUsuario.ForeColor = Color.White;
       lblUsuario.BackColor = Color.Transparent;
