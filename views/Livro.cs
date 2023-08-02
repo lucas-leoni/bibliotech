@@ -329,7 +329,8 @@ namespace Views
       }
 
       // Utiliza a expressão regular para permitir apenas letras e espaços em branco
-      string allowedCharsPattern = "^[a-zA-ZÀ-ÿ' ]+$";
+      // string allowedCharsPattern = "^[a-zA-ZÀ-ÿ' ]+$";
+      string allowedCharsPattern = "^[a-zA-ZÀ-ÿ0-9,' -]+$";
       if (!Regex.IsMatch(e.KeyChar.ToString(), allowedCharsPattern))
       {
         e.Handled = true;
@@ -354,7 +355,8 @@ namespace Views
       }
 
       // Expressão regular para verificar se o titulo contém apenas letras e espaços em branco
-      Regex regex = new Regex("^[a-zA-ZÀ-ÿ' ]+$");
+      // Regex regex = new Regex("^[a-zA-ZÀ-ÿ' ]+$");
+      Regex regex = new Regex("^[a-zA-ZÀ-ÿ0-9,' -]+$");
 
       // Verifica se o titulo corresponde à expressão regular
       if (!regex.IsMatch(titulo))
@@ -584,7 +586,8 @@ namespace Views
       }
 
       // Utiliza a expressão regular para permitir apenas letras e espaços em branco
-      string allowedCharsPattern = "^[a-zA-ZÀ-ÿ' ]+$";
+      // string allowedCharsPattern = "^[a-zA-ZÀ-ÿ' ]+$";
+      string allowedCharsPattern = "^[a-zA-ZÀ-ÿ0-9,' -]+$";
       if (!Regex.IsMatch(e.KeyChar.ToString(), allowedCharsPattern))
       {
         e.Handled = true;
@@ -609,7 +612,8 @@ namespace Views
       }
 
       // Expressão regular para verificar se o campo editora contém apenas letras e espaços em branco
-      Regex regex = new Regex("^[a-zA-ZÀ-ÿ' ]+$");
+      // Regex regex = new Regex("^[a-zA-ZÀ-ÿ' ]+$");
+      Regex regex = new Regex("^[a-zA-ZÀ-ÿ0-9,' -]+$");
 
       // Verifica se o campo editora corresponde à expressão regular
       if (!regex.IsMatch(editora))
